@@ -14,6 +14,12 @@ The temporary checkout uses a distinct synthetic GitHub origin solely for CLI re
 
 The independent consumer's first generated locks exposed gh-aw v1.2.2 defaults for incomplete investigations, failed jobs and threat-detection tracking. Staging the Hunter/Gardener finding does not stage these independent issue paths. All three role sources explicitly disable these issue reports while retaining Actions diagnostics. Threat detection stays enabled and fails closed when no safe verdict is available. The qualification check rejects the observed unwanted settings in the compiled locks. This is a deterministic regression check for the pinned compiler, not proof of actual runtime behavior; the staged-output and failure cases must still be exercised under [#4](https://github.com/grove/farm/issues/4).
 
+## First runtime evidence
+
+The [initial Onboard run](https://github.com/grove/farm-example/actions/runs/45496710845) authenticated and executed successfully, with a clean detection verdict, but the intended artifact failed its final safe-output selection. The agent's edit tool could write a root-level file but could not create the absent `farm-output/` parent using the restricted shell. An alternate root filename reached gh-aw's staging artifact but was outside the configured allowlist. Native gh-aw treats `upload_artifact` handler failures as nonfatal, so a green run is not proof of delivery. Farm uses one exact root-level transient filename per report type and does not widen shell or output permissions. Verify the final safe-output handler outcome and expected delivered artifact (not merely the staging artifact) before accepting a trial; a missing record is incomplete even if Actions reports success. This change requires a new controlled runtime trial.
+
+The initial activation also logged that daily AI-credit enforcement is skipped for manual dispatches. The per-invocation caps still apply; the maintainer must track manual aggregate usage separately. See the [pinned upstream cost-management documentation](https://github.com/github/gh-aw/blob/v1.2.2/docs/src/content/docs/reference/cost-management.md).
+
 ## Repeat locally
 
 Use a disposable checkout of a GitHub repository you own, with working GitHub CLI authentication and no existing Farm files. Do not push or dispatch an unqualified workflow.
