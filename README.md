@@ -17,7 +17,7 @@ Farm should be a small, reusable distribution of agentic workflows and investiga
 
 Both investigate one bounded question at a time. They may find nothing new, disprove a hypothesis, or conclude that complexity is necessary. Useful findings go to human review. Neither role is required to generate issues or write production code.
 
-## Intended installation experience
+## Intended installation and onboarding experience
 
 After a tested release is published, a maintainer should be able to install the package using the existing [gh-aw CLI](https://github.github.com/gh-aw/setup/quick-start/), rather than install a Farm-specific program.
 
@@ -28,11 +28,13 @@ gh aw add grove/farm@v0.1.0
 
 The installation should leave ordinary gh-aw Markdown workflows, generated lock files and an optional example in the consuming repository. Farm discovers the existing project documentation, contributor instructions, build/test entry points and CI conventions. A project with sufficient existing guidance does not need a Farm-specific configuration file.
 
-If anything important is missing, add a short root `FARM.md` to express domain knowledge and local workflow rules. Link to existing contracts and instruments rather than restating them. No required fields or schema. The example is available at `.github/aw/farm/project.example.md` after installation.
+For an existing project, start with the optional **Farm Onboard** workflow, a manually dispatched, read-only survey that collects and distills repository knowledge into a small reviewable proposal. It identifies current contracts, important invariants, candidate experiments, evidence limits and unresolved questions. A maintainer reviews the proposal, clarifies only what matters and incorporates useful guidance into existing documentation or an optional root `FARM.md`. A well-documented project may not need a new file.
+
+Review [the onboarding guide](docs/onboarding.md) for the concrete process. Link to existing contracts and instruments rather than restating them. No required fields or schema. The example is available at `.github/aw/farm/project.example.md` after installation.
 
 Review the native gh-aw engine, authentication, permissions, tools and costs, and compile with `gh aw compile`. Initially, runs are manually dispatched and issue creation is staged. Discovery of a command does not grant permission to execute it; approve any additional instruments through trusted native workflow settings.
 
-The first release must prove this flow in two independent repositories before we advertise it as working. See the [implementation plan](docs/roadmap.md).
+After reviewing native execution settings, run the survey (if useful), review its proposal, and manually calibrate the selected roles on real questions before scheduling anything. The first release must prove this flow in two independent repositories before we advertise it as working. See the [implementation plan](docs/roadmap.md).
 
 ## Design principles
 
@@ -48,10 +50,11 @@ The first release must prove this flow in two independent repositories before we
 ## Project documentation
 
 - [Product and architecture](docs/design.md)
+- [Onboarding existing projects](docs/onboarding.md)
 - [Implementation and release plan](docs/roadmap.md)
 - [Optional `FARM.md` example](config/project.example.md)
 - [Shared investigation method](components/investigation.md)
-- [Hunter](workflows/farm-hunter.md) and [Gardener](workflows/farm-gardener.md)
+- [Onboard](workflows/farm-onboard.md), [Hunter](workflows/farm-hunter.md) and [Gardener](workflows/farm-gardener.md)
 - [Native gh-aw package manifest](aw.yml)
 
 Farm is licensed under the [Apache License 2.0](LICENSE).

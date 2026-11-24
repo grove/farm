@@ -26,7 +26,7 @@ Farm is GitHub-native. It is a distribution of reusable GitHub Agentic Workflows
 | Layer | Farm distributes | Consuming project supplies |
 | --- | --- | --- |
 | Roles | Hunter and Gardener missions and sensible starting defaults | Optional role selection, emphasis or local rules |
-| Methods | Hypothesis testing, counterevidence, preservation analysis, findings and quiet outcomes | Existing contracts, domain invariants and any missing knowledge or exceptions |
+| Methods | Onboarding survey, hypothesis testing, counterevidence, preservation analysis, findings and quiet outcomes | Existing contracts, domain invariants and any missing knowledge or exceptions |
 | Instruments | Discovery of common project entry points and guidance for using native gh-aw tools | Existing tests and approved instruments; custom adapters only for genuinely missing domain capabilities |
 | Execution | Safe starter workflow frontmatter and documented extension points | Engine credentials, prerequisites, approved tools and network destinations, schedule |
 | Evidence | Shared record conventions and native artifact output | Retention policy, sensitivity restrictions, reviewed durable observations |
@@ -68,9 +68,19 @@ Convention is for discovery and defaults, not authorization. Seeing a test comma
 
 The package owns the shared defaults and methods; the project owns its `FARM.md` (if any), existing documentation, rules and observations. Ship only an example under a separate filename, never a live `FARM.md`. Upgrades must preserve local knowledge and workflow overrides. Schedules, engine, timeouts, network, shell tools, setup steps and safe outputs remain ordinary gh-aw settings. Accept the reviewed defaults unless a concrete need requires an override. There is no Farm-specific configuration interpreter.
 
-Native distribution is the starting point: a root `aw.yml`, two installable workflow sources outside the executable workflow directory, and shared Markdown copied as package resources. Consumers compile and review their lock files. Use native imports to share methods. Once package installation and updates have been exercised, consider pinned remote imports or parameterized components if they simplify customization further. Never load changing upstream instructions at runtime from an unpinned branch.
+Native distribution is the starting point: a root `aw.yml`, two investigative workflow sources and an optional-use onboarding workflow source outside the executable workflow directory, and shared Markdown copied as package resources. Consumers compile and review their lock files. Use native imports to share methods. Once package installation and updates have been exercised, consider pinned remote imports or parameterized components if they simplify customization further. Never load changing upstream instructions at runtime from an unpinned branch.
 
 For installation, customization, update and removal, prefer the corresponding gh-aw commands. For a consumer that wants just one role, validate gh-aw's individual-workflow installation behavior with its resource dependencies or offer a small native subpackage. Do not add a custom installer to solve it.
+
+### Onboarding existing projects
+
+Installing the workflow package does not by itself make a repository ready for meaningful ongoing investigations. Farm should offer a concrete, low-effort way to bring an existing project into the practice. The [onboarding guide](onboarding.md) describes the reusable method, outputs, human decisions, and first-run acceptance gate. A manually dispatched Farm Onboard workflow produces a bounded, sanitized proposal using only native gh-aw execution and artifact handling. It has no authority to create issues or PRs, modify repository contents, execute discovered project commands, or activate other workflows. It is a one-shot operation, not a recurring role or an autonomous repository preparation program.
+
+The goal is to compress and connect the knowledge necessary for investigation: intended behavior, invariant, owning paths, evidence, limitations and what would falsify the claim. Capture authoritative source links and revision, separate promises from observed implementation and unresolved assumptions, and ask maintainers only questions that materially change an investigation. Prefer an existing specification, index or scoped guidance over generating a parallel knowledge base. If a missing domain rule belongs in `FARM.md`, propose a small addition; do not overwrite maintainer-owned material. Knowledge collected from a repository is not a new source of truth until the relevant maintainer reviews it.
+
+Onboarding is progressive. A selected territory is ready when its relevant contract, production/public path, available evidence and limitations are clear, the permitted investigation boundary is reviewed, and a maintainer can assess the result. Start with one or two territories; do not make complete documentation, broad cleanup or a fully populated invariant map prerequisites for all activity. Missing evidence can itself justify a bounded gap investigation. A large or poorly documented repository may benefit from repeated targeted surveys rather than one exhaustive crawl.
+
+Review the first real staged investigations, retain useful corrections and activate schedules only when the initial feedback loop works. Later, repeat the survey or a narrower version when contracts, ownership, test instruments or domain rules change substantially. Investigation findings can also suggest targeted corrections to the knowledge; humans decide and promote them. No automatic knowledge rewriting, index service or additional runtime is required.
 
 ## 5. Scaling with the project
 

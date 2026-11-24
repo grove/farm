@@ -1,8 +1,9 @@
 manifest-version: "1"
 name: Farm
-description: Continuous evidence-driven software investigation with the Hunter and Gardener.
+description: Continuous evidence-driven software investigation with onboarding, the Hunter and Gardener.
 experimental: true
 includes:
+  - workflows/farm-onboard.md
   - workflows/farm-hunter.md
   - workflows/farm-gardener.md
 resources:

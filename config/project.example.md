@@ -2,6 +2,8 @@
 
 Most projects do not need this file. If you have additional domain knowledge or local workflow rules, create a root `FARM.md` and include only what is useful. This example is not live configuration. There are no required headings or fields; delete anything you do not need. Link to existing documents instead of copying them.
 
+Farm's optional onboarding workflow can draft the relevant notes and ask targeted questions first; see [the onboarding method in Farm](https://github.com/grove/farm/blob/main/docs/onboarding.md) once released. Review source links and distinguish agreed contracts from unresolved hypotheses. Do not turn inferred implementation behavior into a requirement.
+
 For example, a small library might only need:
 
 > Keep the documented public API backward compatible. Do not simplify the compatibility adapter without exercising the compatibility tests. Prefer investigations of changed public interfaces. See CONTRIBUTING.md for the normal test entry point.

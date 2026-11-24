@@ -9,7 +9,7 @@ The goal is a useful product with as little custom software as possible. Start w
 - Select and pin a supported gh-aw release; record the compatibility floor in the package.
 - Inspect upstream Agentics examples for useful QA and simplification techniques and review license/attribution before reuse.
 - Install the package at a candidate commit into a disposable repository. Verify manifest resources, shared imports, workflow names and generated locks.
-- Test selecting one role, both roles, installing without `FARM.md`, updating a package with a consumer-owned `FARM.md` and native overrides, and removing it without deleting project knowledge.
+- Test selecting one role, both roles and the optional-use onboarding workflow; install without `FARM.md`, update a package with a consumer-owned `FARM.md` and native overrides, and remove it without deleting project knowledge.
 - Resolve native packaging limitations through documented gh-aw mechanisms or upstream fixes before adding a custom installer.
 - Add a small CI check using native gh-aw validation/compilation and a fixture if needed. No fabricated lock files.
 
@@ -24,7 +24,17 @@ The goal is a useful product with as little custom software as possible. Start w
 - Exercise attempted unauthorized actions using controlled fixtures. Test pause/disable, timeouts and concurrent runs. Document the selected engine's real spending limits and enforceable stop mechanism.
 - Keep the package experimental until these checks pass. If native controls cannot meet a requirement, keep that capability disabled and document the gap.
 
+- Qualify the onboarding workflow independently: manual-only, no issue/PR/dispatch or repository-writing outputs, no execution of discovered project commands, one bounded sanitized artifact, reviewed log exposure and quiet failures.
+
 ## Milestone B — Demonstrate consumer value
+
+### B0. Prove knowledge onboarding and preparation
+
+- Run the reusable [onboarding method](onboarding.md) on an existing conventional repository without Farm-specific documentation and on a more complex repository with scattered or conflicting knowledge. Include fixtures for a stale design, a behavior inferred only from code, a misleading test, and an unauthorized candidate command.
+- Require traceable source references and revision, clear distinction between supported contract, observed implementation, historical/proposed design and unresolved question, and a bounded set of useful starter territories and evidence limitations.
+- Verify the proposed knowledge changes are minimal, preserve existing docs and any local `FARM.md`, distinguish candidate instruments from approved commands, and pose only material questions for the maintainer. No automatic repository changes or requirement to create a new knowledge file.
+- Have a maintainer review the proposal, retain only needed guidance and choose an initial territory. Demonstrate that the subsequent Hunter or Gardener can use the reviewed knowledge without rediscovering the entire project.
+- Repeat a targeted survey after a relevant contract or instrument change; identify stale guidance and propose a small reviewed update rather than rewrite the project knowledge. Record onboarding effort, evidence quality and any unresolved blockers.
 
 ### B1. Validate the Hunter and Gardener on a small independent project
 
@@ -53,7 +63,7 @@ A human independently follows an investigation record, reviews a finding or nega
 
 - Publish a pinned experimental or stable version only after the above gates.
 - Document the exact tested installation, engine setup, configuration, compile, dispatch, audit, upgrade and removal commands.
-- Demonstrate installation without a profile on a well-documented repository. Supply a tiny optional `FARM.md` example, examples of domain and role-specific rules, and instructions for approving local test tools without increasing authority accidentally.
+- Demonstrate installation without a profile on a well-documented repository. Supply a tiny optional `FARM.md` example, a tested onboarding workflow and concrete maintainer review checklist, examples of domain and role-specific rules, and instructions for approving local test tools without increasing authority accidentally.
 - Record how many Farm-specific project files, manual choices and workflow edits each installation actually requires. Treat unnecessary setup and duplicated domain knowledge as product defects, not documentation problems.
 - Document how to start with one role, add/remove roles, focus on a subsystem, change cadence and stop all enabled instances using native gh-aw settings. Explain what consumes credits and what native controls can enforce; no automated scaling controller is required.
 - Preserve upstream package-owned files and consumer-owned domain rules through updates. No new CLI or daemon.
@@ -70,6 +80,7 @@ Review all output paths and retained evidence; prove same-repository and maximum
 
 - Two different projects install the same shared Hunter and Gardener methods, with only domain guidance and native execution configuration differing.
 - A conventionally organized project can orient and investigate without a `FARM.md`. Local knowledge can be supplied in one optional Markdown file, with no required fields, duplicate inventory or custom configuration language.
+- An existing project can use the same on-demand onboarding workflow to collect and distill relevant knowledge, review the gaps and start a real investigation with a minimal amount of maintainer input. Knowledge stays source-linked and locally owned; onboarding adds no required recurring workflow or independent runtime.
 - Installation, compilation and upgrades are reproducible against a recorded gh-aw version.
 - At least one real learning cycle is reviewed and retained; a negative result counts.
 - Findings are bounded, attributable, appropriately scoped and quiet when there is nothing to publish.
