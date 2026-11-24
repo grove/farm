@@ -1,3 +1,7 @@
+---
+description: Shared investigation method for Farm roles.
+---
+
 # Shared farm investigation method
 
 Apply this method with your role-specific mission. This is one investigation, not an implementation assignment.

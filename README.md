@@ -47,13 +47,17 @@ After reviewing native execution settings, run the survey (if useful), review it
 - **Scale with the project:** begin with one or two roles and bounded runs. Grow attention, frequency, depth or specialization only as project needs and useful evidence justify it; scale back when they do not.
 - **Near-zero additional runtime:** GitHub Agentic Workflows is the runtime. Prefer ordinary Markdown and YAML and existing project instruments; no Farm service, worker or database. If a small helper is unavoidable, run it ephemerally inside an existing GitHub Actions job.
 
+## Development
+
+The [native package qualification](docs/qualification.md) describes the pinned compiler and deterministic installation check. A passing compilation is not a successful agent run or security qualification.
+
 ## Project documentation
 
 - [Product and architecture](docs/design.md)
 - [Onboarding existing projects](docs/onboarding.md)
 - [Implementation and release plan](docs/roadmap.md)
 - [Optional `FARM.md` example](config/project.example.md)
-- [Shared investigation method](components/investigation.md)
+- [Shared investigation method](.github/aw/farm/investigation.md)
 - [Onboard](workflows/farm-onboard.md), [Hunter](workflows/farm-hunter.md) and [Gardener](workflows/farm-gardener.md)
 - [Native gh-aw package manifest](aw.yml)
 
