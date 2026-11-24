@@ -29,7 +29,7 @@ safe-outputs:
     max-uploads: 1
     retention-days: 14
     max-size-bytes: 65536
-    allowed-paths: ["farm-output/investigation.md"]
+    allowed-paths: ["farm-investigation.md"]
   noop:
     report-as-issue: false
   report-failure-as-issue: false

@@ -63,6 +63,17 @@ jobs:
             test -s ".github/workflows/farm-$role.md"
             test -s ".github/workflows/farm-$role.lock.yml"
             lock=".github/workflows/farm-$role.lock.yml"
+            if [ "$role" = onboard ]; then
+              record=farm-onboarding.md
+            else
+              record=farm-investigation.md
+            fi
+            grep -F "allowed-paths: [\"$record\"]" ".github/workflows/farm-$role.md"
+            grep -F '\"allowed-paths\":[\"'"$record"'\"]' "$lock" >/dev/null
+            if grep -F 'farm-output/' "$lock"; then
+              printf 'Obsolete nested artifact path in %s\n' "$lock" >&2
+              exit 1
+            fi
             # Staged findings alone do not silence gh-aw's diagnostic outputs.
             if grep -Eq 'GH_AW_REPORT_INCOMPLETE_CREATE_ISSUE: "true"|GH_AW_REPORT_FAILED_JOBS: "true"|GH_AW_FAILURE_REPORT_AS_ISSUE: "true"|GH_AW_NOOP_REPORT_AS_ISSUE: "true"|create_report_incomplete_issue|name: Log detection run|GH_AW_DETECTION_CONTINUE_ON_ERROR: "true"' "$lock"; then
               printf 'Unexpected diagnostic publication or fail-open detection in %s\n' "$lock" >&2
