@@ -57,7 +57,7 @@ The [native package qualification](docs/qualification.md) describes the pinned c
 - [Onboarding existing projects](docs/onboarding.md)
 - [Implementation and release plan](docs/roadmap.md)
 - [Optional `FARM.md` example](config/project.example.md)
-- [Shared investigation method](.github/aw/farm/investigation.md)
+- [Shared investigation method](workflows/shared/farm-investigation.md)
 - [Onboard](workflows/farm-onboard.md), [Hunter](workflows/farm-hunter.md) and [Gardener](workflows/farm-gardener.md)
 - [Native gh-aw package manifest](aw.yml)
 

@@ -4,7 +4,6 @@ on:
     paths:
       - aw.yml
       - 'workflows/**'
-      - '.github/aw/farm/**'
       - 'config/**'
       - '.github/workflows/qualify-lifecycle.yml'
   push:
@@ -12,7 +11,6 @@ on:
     paths:
       - aw.yml
       - 'workflows/**'
-      - '.github/aw/farm/**'
       - 'config/**'
       - '.github/workflows/qualify-lifecycle.yml'
   workflow_dispatch:
@@ -141,7 +139,7 @@ jobs:
           cat "$RUNNER_TEMP/farm-remove-one.log"
           test ! -e .github/workflows/farm-gardener.md
           test ! -e .github/workflows/farm-gardener.lock.yml
-          test -s .github/aw/farm/investigation.md
+          test -s .github/workflows/shared/farm-investigation.md
           gh aw compile --validate --strict
           timeout 30s script -q -e -c 'gh aw remove farm- --no-remove-orphans 2>"$RUNNER_TEMP/farm-remove-all.log"' /dev/null <<<yes
           cat "$RUNNER_TEMP/farm-remove-all.log"
