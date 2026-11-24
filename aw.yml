@@ -1,4 +1,5 @@
 manifest-version: "1"
+min-version: v1.2.2
 name: Farm
 description: Continuous evidence-driven software investigation with onboarding, the Hunter and Gardener.
 experimental: true
@@ -7,7 +8,7 @@ includes:
   - workflows/farm-hunter.md
   - workflows/farm-gardener.md
 resources:
-  - source: components/investigation.md
+  - source: .github/aw/farm/investigation.md
     destination: .github/aw/farm/investigation.md
   - source: config/project.example.md
     destination: .github/aw/farm/project.example.md

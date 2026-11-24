@@ -1,0 +1,73 @@
+name: Qualify native package
+
+on:
+  pull_request:
+    paths:
+      - aw.yml
+      - 'workflows/**'
+      - '.github/aw/farm/**'
+      - 'config/**'
+      - '.github/workflows/qualify-package.yml'
+  push:
+    branches: [main]
+    paths:
+      - aw.yml
+      - 'workflows/**'
+      - '.github/aw/farm/**'
+      - 'config/**'
+      - '.github/workflows/qualify-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install-and-compile:
+    # First qualification is limited to revisions in this repository. No
+    # privileged pull_request_target trigger and no model credentials.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Set up pinned gh-aw CLI
+        uses: github/gh-aw/actions/setup-cli@399a445fe2d8926c616b54b1b82a16b5b2be4445 # v1.2.2
+        with:
+          version: v1.2.2
+
+      - name: Install and compile in disposable checkout
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          gh aw version
+          consumer="$(mktemp -d "$RUNNER_TEMP/farm-consumer.XXXXXX")"
+          cd "$consumer"
+          git init -q -b main
+          git config user.name "Farm qualification"
+          git config user.email "farm-qualification@example.invalid"
+          printf '# Disposable consumer\n' > README.md
+          git add README.md
+          git commit -qm "Initialize disposable consumer"
+          # gh-aw rejects adding a package to its source repository. Give
+          # this local fixture a distinct, synthetic consumer identity.
+          # It is not a remote repository to create, fetch from, or push to.
+          unset GH_REPO
+          git remote add origin "$GITHUB_SERVER_URL/farm-qualification-fixture/local-consumer.git"
+          git remote set-url --push origin "$consumer/nonexistent-push-target"
+          test ! -e FARM.md
+          gh aw add "$GITHUB_REPOSITORY@$PACKAGE_SHA" --no-security-scanner
+          gh aw compile --validate --strict
+          for role in onboard hunter gardener; do
+            test -s ".github/workflows/farm-$role.md"
+            test -s ".github/workflows/farm-$role.lock.yml"
+          done
+          test -s .github/aw/farm/investigation.md
+          test -s .github/aw/farm/project.example.md
+          test ! -e FARM.md
+          printf '\nInstalled files:\n'
+          find .github -type f | sort
+          printf '\nLocal changes:\n'
+          git status --short
+          printf '\nCandidate %s compiled in a disposable checkout. No agents dispatched.\n' "$PACKAGE_SHA"
