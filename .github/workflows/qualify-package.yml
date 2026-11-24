@@ -50,9 +50,12 @@ jobs:
           printf '# Disposable consumer\n' > README.md
           git add README.md
           git commit -qm "Initialize disposable consumer"
-          # Give gh-aw a GitHub repository context without pushing or creating
-          # a remote consumer. The token can only read the source repository.
-          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          # gh-aw rejects adding a package to its source repository. Give
+          # this local fixture a distinct, synthetic consumer identity.
+          # It is not a remote repository to create, fetch from, or push to.
+          unset GH_REPO
+          git remote add origin "$GITHUB_SERVER_URL/farm-qualification-fixture/local-consumer.git"
+          git remote set-url --push origin "$consumer/nonexistent-push-target"
           test ! -e FARM.md
           gh aw add "$GITHUB_REPOSITORY@$PACKAGE_SHA" --no-security-scanner
           gh aw compile --validate --strict
