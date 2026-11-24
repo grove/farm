@@ -34,7 +34,7 @@ Review [the onboarding guide](docs/onboarding.md) for the concrete process. Link
 
 Review the native gh-aw engine, authentication, permissions, tools and costs, and compile with `gh aw compile`. Initially, runs are manually dispatched and issue creation is staged. Discovery of a command does not grant permission to execute it; approve any additional instruments through trusted native workflow settings.
 
-After reviewing native execution settings, run the survey (if useful), review its proposal, and manually calibrate the selected roles on real questions before scheduling anything. The first release must prove this flow in two independent repositories before we advertise it as working. See the [implementation plan](docs/roadmap.md).
+After reviewing native execution settings, run the survey (if useful), review its proposal, and manually calibrate the selected roles on real questions before scheduling anything. Hunter and Gardener accept an optional `question` input on manual dispatch: leave it blank for autonomous question selection, or supply one bounded question and the evidence needed. Do not include sensitive data or commands to authorize. A question is scope, not additional authority; edit and review native workflow permissions separately. The first release must prove this flow in two independent repositories before we advertise it as working. See the [implementation plan](docs/roadmap.md).
 
 ## Design principles
 
@@ -49,7 +49,7 @@ After reviewing native execution settings, run the survey (if useful), review it
 
 ## Development
 
-The [native package qualification](docs/qualification.md) describes the pinned compiler and deterministic installation check. A passing compilation is not a successful agent run or security qualification.
+The [native package qualification](docs/qualification.md) and [lifecycle guide](docs/lifecycle.md) describe the pinned compiler, verified installation and lifecycle checks, and remaining limitations. A passing compilation is not a successful agent run or security qualification.
 
 ## Project documentation
 
