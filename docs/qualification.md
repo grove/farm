@@ -10,6 +10,10 @@ The [qualification workflow](../.github/workflows/qualify-package.yml) uses the 
 
 The temporary checkout uses a distinct synthetic GitHub origin solely for CLI repository context, with a non-existent local push target. gh-aw rejects installing a package from the current repository; the first run failed because the fixture identified itself as the source repository. No remote fixture is created, and nothing is pushed or dispatched. This exercises remote package retrieval and local compilation, not the permissions or metadata of a real consumer. It is not yet a separate GitHub repository or a full consumer acceptance test. Pull requests from forks do not run this first check; a maintainer can review and test a same-repository revision. There is no agent engine credential or additional runtime involved.
 
+## Diagnostic publication boundary
+
+The independent consumer's first generated locks exposed gh-aw v1.2.2 defaults for incomplete investigations, failed jobs and threat-detection tracking. Staging the Hunter/Gardener finding does not stage these independent issue paths. All three role sources explicitly disable these issue reports while retaining Actions diagnostics. Threat detection stays enabled and fails closed when no safe verdict is available. The qualification check rejects the observed unwanted settings in the compiled locks. This is a deterministic regression check for the pinned compiler, not proof of actual runtime behavior; the staged-output and failure cases must still be exercised under [#4](https://github.com/grove/farm/issues/4).
+
 ## Repeat locally
 
 Use a disposable checkout of a GitHub repository you own, with working GitHub CLI authentication and no existing Farm files. Do not push or dispatch an unqualified workflow.
