@@ -1,0 +1,156 @@
+name: Qualify native lifecycle
+on:
+  pull_request:
+    paths:
+      - aw.yml
+      - 'workflows/**'
+      - '.github/aw/farm/**'
+      - 'config/**'
+      - '.github/workflows/qualify-lifecycle.yml'
+  push:
+    branches: [main]
+    paths:
+      - aw.yml
+      - 'workflows/**'
+      - '.github/aw/farm/**'
+      - 'config/**'
+      - '.github/workflows/qualify-lifecycle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  single-role:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [onboard, hunter, gardener]
+    steps:
+      - uses: github/gh-aw/actions/setup-cli@399a445fe2d8926c616b54b1b82a16b5b2be4445 # v1.2.2
+        with:
+          version: v1.2.2
+      - name: Evaluate native single-role installation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          ROLE: ${{ matrix.role }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          consumer="$(mktemp -d "$RUNNER_TEMP/farm-role.XXXXXX")"
+          cd "$consumer"
+          git init -q -b main
+          git config user.name "Farm qualification"
+          git config user.email "farm-qualification@example.invalid"
+          printf '# Disposable consumer\n' > README.md
+          git add README.md
+          git commit -qm baseline
+          unset GH_REPO
+          git remote add origin "$GITHUB_SERVER_URL/farm-qualification-fixture/local-consumer.git"
+          git remote set-url --push origin "$consumer/nonexistent-push-target"
+          gh aw version
+          # A direct workflow install is not a full manifest install. Check
+          # whether the pinned CLI actually retrieves the shared dependency.
+          if gh aw add "$GITHUB_REPOSITORY/workflows/farm-$ROLE.md@$PACKAGE_SHA" --no-security-scanner && gh aw compile --validate --strict && test -s ".github/workflows/farm-$ROLE.lock.yml"; then
+            for role in onboard hunter gardener; do
+              if [ "$role" != "$ROLE" ]; then
+                test ! -e ".github/workflows/farm-$role.md"
+                test ! -e ".github/workflows/farm-$role.lock.yml"
+              fi
+            done
+            printf 'Direct single-role installation: PASS (%s)\n' "$ROLE" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            # Do not count a failed direct install as qualified. Record this
+            # diagnostic separately; the full-package route is tested below.
+            printf 'Direct single-role installation: NOT QUALIFIED (%s); inspect add/compile diagnostics.\n' "$ROLE" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          test ! -e FARM.md
+          git status --short
+
+  update-and-remove:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: github/gh-aw/actions/setup-cli@399a445fe2d8926c616b54b1b82a16b5b2be4445 # v1.2.2
+        with:
+          version: v1.2.2
+      - name: Qualify package update, local overrides and removal
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OLD_SHA: 7cba1ed46aaf2e405d39e238c81f06bef489e2a5
+        shell: bash
+        run: |
+          set -euo pipefail
+          consumer="$(mktemp -d "$RUNNER_TEMP/farm-lifecycle.XXXXXX")"
+          cd "$consumer"
+          git init -q -b main
+          git config user.name "Farm qualification"
+          git config user.email "farm-qualification@example.invalid"
+          mkdir -p docs .github/workflows
+          printf '# Disposable consumer\n' > README.md
+          printf '# Reviewed project observations\n' > docs/design-notes.md
+          printf 'name: Ordinary CI\non: workflow_dispatch\npermissions: {}\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo ordinary-ci\n' > .github/workflows/ci.yml
+          git add -A
+          git commit -qm baseline
+          unset GH_REPO
+          git remote add origin "$GITHUB_SERVER_URL/farm-qualification-fixture/local-consumer.git"
+          git remote set-url --push origin "$consumer/nonexistent-push-target"
+          gh aw version
+          gh aw add "$GITHUB_REPOSITORY@$OLD_SHA" --no-security-scanner
+          gh aw compile --validate --strict
+          git add -A
+          git commit -qm installed
+          # A consumer owns its knowledge and local native settings. Test a
+          # real old-to-new package update with a committed local override.
+          printf '# Project-owned guidance\n' > FARM.md
+          sed -i '/^timeout-minutes: 30$/a max-ai-credits: 100' .github/workflows/farm-hunter.md
+          sed -i '/^  threat-detection:$/a\    max-ai-credits: 50' .github/workflows/farm-hunter.md
+          gh aw compile --validate --strict
+          git add -A
+          git commit -qm customized
+          before="$(git rev-parse HEAD)"
+          target="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)"
+          test "$target" != "$OLD_SHA"
+          printf 'Native update target observed before update: %s\n' "$target"
+          # The native updater resolves an immutable source SHA from the
+          # installed tracking ref; do not claim it accepts a new pinned SHA.
+          gh aw update "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --cool-down 0 --no-release-bump --no-compile
+          gh aw compile --validate --strict
+          for role in onboard hunter gardener; do
+            file=".github/workflows/farm-$role.md"
+            grep -F "source-sha: \"$target\"" "$file"
+            test -s ".github/workflows/farm-$role.lock.yml"
+            grep -F 'continue-on-error: false' "$file"
+          done
+          grep -Fx 'max-ai-credits: 100' .github/workflows/farm-hunter.md
+          grep -Fx '    max-ai-credits: 50' .github/workflows/farm-hunter.md
+          grep -F 'allowed-paths: ["farm-investigation.md"]' .github/workflows/farm-hunter.md
+          git diff --exit-code "$before" -- FARM.md README.md docs/design-notes.md .github/workflows/ci.yml
+          printf 'Native update preserved reviewed guidance and local budget overrides at %s.\n' "$target" | tee -a "$GITHUB_STEP_SUMMARY"
+          # v1.2.2 remove requires a TTY. Supply an explicit yes on a PTY
+          # only in this disposable checkout, never against a real consumer.
+          git add -A
+          git commit -qm updated
+          timeout 30s script -q -e -c 'gh aw remove farm-gardener --no-remove-orphans 2>"$RUNNER_TEMP/farm-remove-one.log"' /dev/null <<<yes
+          cat "$RUNNER_TEMP/farm-remove-one.log"
+          test ! -e .github/workflows/farm-gardener.md
+          test ! -e .github/workflows/farm-gardener.lock.yml
+          test -s .github/aw/farm/investigation.md
+          gh aw compile --validate --strict
+          timeout 30s script -q -e -c 'gh aw remove farm- --no-remove-orphans 2>"$RUNNER_TEMP/farm-remove-all.log"' /dev/null <<<yes
+          cat "$RUNNER_TEMP/farm-remove-all.log"
+          for role in onboard hunter gardener; do
+            test ! -e ".github/workflows/farm-$role.md"
+            test ! -e ".github/workflows/farm-$role.lock.yml"
+          done
+          git diff --exit-code "$before" -- FARM.md README.md docs/design-notes.md .github/workflows/ci.yml
+          printf 'Remaining gh-aw files (review before removing shared initialization):\n'
+          find .github -type f | sort
+          printf 'Role removal preserved consumer-owned knowledge and ordinary CI.\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          git status --short
