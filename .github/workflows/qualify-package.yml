@@ -62,6 +62,12 @@ jobs:
           for role in onboard hunter gardener; do
             test -s ".github/workflows/farm-$role.md"
             test -s ".github/workflows/farm-$role.lock.yml"
+            lock=".github/workflows/farm-$role.lock.yml"
+            # Staged findings alone do not silence gh-aw's diagnostic outputs.
+            if grep -Eq 'GH_AW_REPORT_INCOMPLETE_CREATE_ISSUE: "true"|GH_AW_REPORT_FAILED_JOBS: "true"|GH_AW_FAILURE_REPORT_AS_ISSUE: "true"|GH_AW_NOOP_REPORT_AS_ISSUE: "true"|create_report_incomplete_issue|name: Log detection run|GH_AW_DETECTION_CONTINUE_ON_ERROR: "true"' "$lock"; then
+              printf 'Unexpected diagnostic publication or fail-open detection in %s\n' "$lock" >&2
+              exit 1
+            fi
           done
           test -s .github/aw/farm/investigation.md
           test -s .github/aw/farm/project.example.md

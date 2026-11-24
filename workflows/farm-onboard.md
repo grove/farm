@@ -26,6 +26,12 @@ safe-outputs:
   noop:
     report-as-issue: false
   report-failure-as-issue: false
+  report-failed-jobs: false
+  report-incomplete:
+    create-issue: false
+  threat-detection:
+    report-as-issue: false
+    continue-on-error: false
   report-missing-tool: false
   report-missing-data:
     create-issue: false
