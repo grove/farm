@@ -13,12 +13,13 @@ Farm is GitHub-native. It is a distribution of reusable GitHub Agentic Workflows
 ## 2. Architectural constraints
 
 1. Prefer upstream gh-aw features and existing community workflows. Extract a reusable component only when an actual consumer needs it. Contribute generic platform gaps upstream when practical.
-2. Do not create a Farm CLI, installer, configuration interpreter, scheduler, agent runner, model adapter, database, web service, dashboard, MCP server or package registry for the initial product.
+2. GitHub Agentic Workflows and GitHub Actions are the runtime. Farm is a distribution of reusable components, not another process that must be deployed or operated. Do not create a Farm CLI, installer, configuration interpreter, scheduler, agent runner, model adapter, database, web service, dashboard, MCP server or package registry for the initial product. An idle farm has no Farm-owned process or service.
 3. Prefer convention over configuration: existing repository artifacts are the default sources of project context. A short, optional project-owned `FARM.md` supplies missing domain knowledge and exceptions. Use native gh-aw frontmatter for executable settings. Do not invent a parallel YAML DSL, generic adapter SDK or plugin protocol.
 4. A project can enable one role, both roles or later components independently. A role does not require another role to be online, an autonomous task queue or a centrally hosted service.
 5. Every reusable role should be installable without changes to its investigation method. Consumer-specific commands and policy changes belong in documented configuration and native gh-aw extension points. If consumers need divergent copies of generic methods, improve the shared component.
-6. Any proposed executable code must identify the upstream feature it cannot use, the minimum behavior it adds, an owner and a removal condition. A short script may be justified to enforce a real invariant; fewer files are not an excuse to hide complexity in prompts.
+6. Any proposed executable code must identify the upstream feature it cannot use, the minimum behavior it adds, an owner and a removal condition. A short script may be justified to enforce a real invariant, but should execute within an existing bounded GitHub Actions job, leave no resident process or extra operational dependency, and preferably be replaced by an upstream feature. Fewer files are not an excuse to hide complexity in prompts.
 7. Every installation is owned by the consuming repository. No credentials, code, findings or telemetry are sent to Farm as part of ordinary operation. Engine/provider processing and configured network destinations remain subject to the consumer's own security review.
+8. Scale capacity, focus and accumulated knowledge independently of runtime architecture. A project must be able to start small, add or remove capacity in place, and remain on the same component and evidence interfaces. Project size, complexity, change rate, consequence of failure, review capacity and observed usefulness inform the choice; repository size alone does not determine the number of agents or runs.
 
 ## 3. Layers and ownership
 
@@ -71,7 +72,45 @@ Native distribution is the starting point: a root `aw.yml`, two installable work
 
 For installation, customization, update and removal, prefer the corresponding gh-aw commands. For a consumer that wants just one role, validate gh-aw's individual-workflow installation behavior with its resource dependencies or offer a small native subpackage. Do not add a custom installer to solve it.
 
-## 5. Investigation loop
+## 5. Scaling with the project
+
+Scaling is an operating property of the same farm, not a migration to a larger platform. A young project may need only an occasional Hunter. As it grows, its important contracts, failure modes, contributors, subsystems and accumulated knowledge change. The farm should grow its capacity to investigate these without requiring the project to maintain a separate farm application. Growth is reversible; a mature, stable project may need less activity than a smaller fast-changing one.
+
+### A gradual path
+
+These are illustrative operating shapes, not mandatory tiers, maturity scores, plans or product editions.
+
+| Shape | What changes | What stays the same |
+| --- | --- | --- |
+| Start | Install one or both roles, use manual dispatch and staged publication. Discover existing context. | Shared methods, evidence conventions, native execution |
+| Establish a rhythm | Enable a modest reviewed schedule; retain useful observations; adjust attention based on results. | Same package and domain guidance |
+| Broaden coverage | Allocate bounded investigations to different existing components, contracts or risk areas; adjust cadence or use a few scoped workflow instances. | Same role implementation, local knowledge and evidence format |
+| Deepen investigations | Reuse specialized instruments, toolchains or optional methods; grant a reviewed experiment a larger allowance when justified. | Native execution and explicit authority |
+| Specialize | Install additional reusable roles or scoped instances only when distinct methods, prerequisites or review needs justify them. Allow bounded parallel execution where the budget and evidence lifecycle permit it. | Component interfaces, human ownership, no independent Farm runtime |
+
+Projects need not pass through each shape or maintain a separate file for each territory. A monorepo can use existing packages, directories, scoped `AGENTS.md`, documentation and ownership boundaries to guide investigations. The root optional `FARM.md` can link to existing subsystem guidance and add exceptional rules; avoid introducing a new hierarchy of mandatory farm configuration. When a native workflow instance needs a narrower scope, use a small reviewed wrapper, shared import or other supported gh-aw customization mechanism rather than fork the role implementation. Qualify the chosen composition and upgrade mechanism before publishing it.
+
+### Scale attention before compute
+
+Every run continues to investigate a bounded question. Do not expand a single prompt to cover the entire repository, inspect every file or reload all historical observations as the project grows. Prefer recent changes, consequential invariants, weak evidence, neglected areas and relevant prior outcomes. Review scope selection for tunnel vision, repeated work and overlooked cross-component contracts. Keep stable territory references when practical, using paths or contract identifiers the project already understands.
+
+Use existing GitHub search, run records, issues and reviewed project documentation to orient and deduplicate. Retrieve only relevant history and check applicability against the current baseline. Durable observations can be split by existing component or contract when they become unwieldy; an optional cache may improve orientation but must be reconstructable and non-authoritative. If the available context or tool budget cannot support a conclusion, narrow the question, retain the uncertainty or stop. There is no need for a persistent vector database, project-wide index or centralized territory registry by default.
+
+### Scale execution using the native substrate
+
+Use existing gh-aw/Actions triggers, reviewed schedules, workflow instances, runner choices, tools, timeouts and concurrency controls. Start serially and increase capacity through a small number of bounded, independently reviewable runs. Parallel scopes should have distinguishable identities, separate evidence and approved resource limits. Each run should stand on its own; handoffs can be links to existing issues, observations or experiments rather than a new dispatch protocol.
+
+Scheduled investigations are best-effort exploratory work, not a durable task queue. Design for delayed, skipped, canceled and overlapping runs. No run may depend on exactly-once delivery or a complete chronological history. Before introducing parallelism, test how native concurrency behaves for the selected workflows, ensure resource-heavy experiments cannot overwhelm shared infrastructure, and handle potential concurrent duplicate findings. Retain staged outputs or use human curation where concurrent publication cannot meet the novelty and volume boundaries. Do not use a new queue or scheduler merely to guarantee every planned investigation occurs.
+
+Scaling time, cost, frequency, concurrency or specialization is distinct from increasing authority. Larger farms do not gain code-writing, publication or credential privileges by virtue of size. Keep aggregate spend and review burden bounded across all installed roles and scoped instances; enforce the chosen limits with trusted native/provider controls, and reduce or pause activity when those limits cannot be maintained. A farm can suggest changes to its own cadence or scope based on recorded outcomes, but a maintainer reviews any operational change before it takes effect. The initial release does not require an autonomous scaling controller.
+
+### The runtime boundary
+
+Farm's steady-state operation consists of native gh-aw workflows executing in GitHub Actions, plus the already-approved project tools and dependencies necessary for the investigation. Distribution and configuration are primarily Markdown and native workflow frontmatter. No Farm-owned daemon, controller, API service, shared worker pool, message bus or persistent database is needed, even for a larger installation. GitHub and the configured engine provide the underlying services; their resource use and cost are real and remain the consumer's responsibility.
+
+Prefer native facilities, then improvements contributed upstream, then the smallest reusable helper running within the existing job boundary. Any later proposal requiring a new runtime, durable coordination service or infrastructure to operate independently of gh-aw must demonstrate a concrete, observed limitation, alternatives tried, operational cost and an exit strategy. It is a separate architectural decision, not an automatic consequence of growth.
+
+## 6. Investigation loop
 
 Each run:
 
@@ -84,7 +123,7 @@ Each run:
 7. Produces an investigation record and at most one eligible finding. Quiet, duplicate, disproved, blocked and inconclusive outcomes remain valid and visible in the run record without opening issues.
 8. A human reviews the result, decides its disposition, and promotes useful learning before artifacts expire. Accepted implementation work follows the project's ordinary process.
 
-The first version needs no ranking service or semantic index. Repository history, GitHub search and reviewed observations are sufficient until experience shows otherwise. Cache memory may assist orientation later, but eviction must not erase authoritative knowledge.
+The first version needs no ranking service or semantic index. Repository history, GitHub search and reviewed observations are the intended basis for bounded attention and history retrieval. Cache memory may assist orientation later, but eviction must not erase authoritative knowledge.
 
 ### Hunter
 
@@ -102,7 +141,7 @@ It must identify necessary distinctions and verification obligations, not optimi
 
 Independent verification, performance, dependencies, compatibility, operational learning and architecture research are potential components. Treat them as territories or methods first. Introduce separate roles only when their questions, instruments, authority or review requirements differ materially. Increasing write authority requires its own design and release gate.
 
-## 6. Evidence and learning
+## 7. Evidence and learning
 
 The shared record has a small human-readable structure: role, question, territory, baseline revision, workflow and run reference, contract, inspected paths, actual commands and inputs, observations, counterevidence, conclusion, limitations, related findings and disposition. Local modifications and their results are separate from the baseline. Engine and usage metadata can be linked from native gh-aw run artifacts rather than duplicated.
 
@@ -112,9 +151,9 @@ Use existing GitHub Actions artifacts for short-lived sanitized records. A stage
 
 Use ordinary issues for actionable findings after explicit approval of live publication. Humans record a disposition: accept, investigate further, settle contract, reject or revisit on change. Promote durable lessons into a maintainer-owned observations file or existing documentation. Artifacts expire; cache memory is optional and non-authoritative. A record's revision and scope determine whether it still applies. Do not create a second issue tracker or a Farm database.
 
-The durable learning loop matters more than how many findings are published. Review usefulness, reproducibility, duplication, coverage of important territories, cost, review burden and whether lessons survive later changes. Metrics diagnose the process; they are not agent quotas.
+The durable learning loop matters more than how many findings are published. Review usefulness, reproducibility, duplication, coverage of important territories, cost, review burden and whether lessons survive later changes. As the project grows, use those observations to change the distribution and depth of attention before adding more workflows. Metrics diagnose the process; they are not agent quotas.
 
-## 7. Authority, safety and defaults
+## 8. Authority, safety and defaults
 
 The investigation process is not a security boundary. Trusted gh-aw configuration, its generated workflows, tool permissions, credential scopes and execution environment determine authority. Repository files, issues, logs and tool output can be adversarial; text discovered during investigation does not grant permissions. Never rely on an instruction to redact or refrain as the only control.
 
@@ -126,13 +165,13 @@ Explicitly suppress ordinary no-op and failure tracking issues; validate all dia
 
 A run timeout and concurrency do not establish an aggregate monetary ceiling. Use native gh-aw credit controls where applicable and provider/repository spending and admission controls for the selected engine. Document what is enforced, what is estimated, and how to stop both workflows. No unattended operation before the budget and ownership decisions are in place.
 
-## 8. Distribution and maintenance
+## 9. Distribution and maintenance
 
 Version the package and test it against a named compatible gh-aw release. Pin package references to reviewed releases or immutable commits. Do not hand-edit generated lock files. Compare install/compile output and permissions on upgrades, and preserve consumer-owned configuration. A consumer can remove the workflows and package-owned resources while keeping project knowledge and decisions.
 
 The package should stay small: only shared methods and native workflow configuration until a proven gap requires more. Tests and reference installations are essential even when runtime code is absent. A new role, instrument or component should show reuse in more than one project, or a concrete reason it is broadly useful. Avoid an extensive catalog of untested templates.
 
-## 9. References
+## 10. References
 
 - [gh-aw package manifest](https://github.github.com/gh-aw/reference/aw-yml-package-manifest/)
 - [gh-aw imports](https://github.github.com/gh-aw/reference/imports/)

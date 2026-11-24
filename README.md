@@ -4,7 +4,7 @@
 
 Farm is an open-source project for installing a software farm into an existing GitHub repository. A farm continuously discovers correctness and completeness gaps, identifies opportunities to simplify a system, and accumulates useful knowledge about it. Unlike a software factory, which implements known work, a farm helps discover what work is worth doing.
 
-Farm should be a small, reusable distribution of agentic workflows and investigation practices, not a new agent runtime. The consuming repository supplies its own contracts, priorities, existing test commands and domain-specific instruments. GitHub supplies execution, scheduling, authentication, artifacts, issues and constrained outputs.
+Farm should be a small, reusable distribution of agentic workflows and investigation practices, not a new agent runtime. It should grow with the project, from a single occasional investigation to multiple focused workflows, without requiring new infrastructure or a different installation model. The consuming repository supplies its own contracts, priorities, existing test commands and domain-specific instruments. GitHub supplies execution, scheduling, authentication, artifacts, issues and constrained outputs. An idle farm should require no running Farm-owned process or service.
 
 > **Status: initial design and experimental package candidate.** The package is not released or qualified for unattended use. The workflows in this repository are distribution sources, not active GitHub Actions workflows.
 
@@ -42,7 +42,8 @@ The first release must prove this flow in two independent repositories before we
 - **Evidence over activity:** useful learning matters; issue counts and agent activity do not.
 - **Local ownership:** the consuming repository owns its data, credentials, contracts, budgets, findings and decisions.
 - **Explicit authority:** proposals are not permission to change code or publish sensitive information.
-- **Small by default:** start with ordinary Markdown and YAML. Add software only to close a demonstrated gap.
+- **Scale with the project:** begin with one or two roles and bounded runs. Grow attention, frequency, depth or specialization only as project needs and useful evidence justify it; scale back when they do not.
+- **Near-zero additional runtime:** GitHub Agentic Workflows is the runtime. Prefer ordinary Markdown and YAML and existing project instruments; no Farm service, worker or database. If a small helper is unavoidable, run it ephemerally inside an existing GitHub Actions job.
 
 ## Project documentation
 

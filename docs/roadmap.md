@@ -38,6 +38,15 @@ Use a substantially different repository, ideally a database or distributed syst
 
 A human independently follows an investigation record, reviews a finding or negative result, and promotes the useful lesson before artifacts expire. A later run uses that lesson without repeating a settled finding. Verify that missing memory does not break a run. Use ordinary GitHub issues, reviewed docs and native artifacts; no new storage service.
 
+### B4. Prove incremental scaling without a new runtime
+
+- Start with a single manually dispatched role and no Farm-specific profile in a conventional project; add the second role without replacing the installation or losing prior learning.
+- In the larger consumer, use existing component boundaries and contract references to exercise more than one territory. Demonstrate bounded context and targeted history lookup rather than loading the entire repository or all prior results.
+- Exercise native cadence/scope customization or a small scoped workflow wrapper using the same shared role and method, then scale back. Verify that consumer guidance, retained evidence and upgrades remain compatible.
+- Test the relevant native concurrency behavior, delayed/skipped/canceled runs, interruption and overlapping duplicate proposals before allowing parallel execution. Verify aggregate budget, shared experiment resource limits and review capacity; keep outputs staged if a boundary is not enforceable.
+- Establish that the scaled installation uses only gh-aw/Actions, existing approved instruments and any strictly necessary ephemeral helpers. No Farm-owned process, database, service, durable queue or independent control plane. Document remaining native platform limits rather than build a general runtime.
+- Evaluate whether extra scope or frequency produces useful learning without proportionally increasing configuration effort or curation burden. A large project does not need more agents by default.
+
 ## Milestone C — Publish a small first release
 
 ### C1. Make installation and adaptation easy
@@ -46,7 +55,7 @@ A human independently follows an investigation record, reviews a finding or nega
 - Document the exact tested installation, engine setup, configuration, compile, dispatch, audit, upgrade and removal commands.
 - Demonstrate installation without a profile on a well-documented repository. Supply a tiny optional `FARM.md` example, examples of domain and role-specific rules, and instructions for approving local test tools without increasing authority accidentally.
 - Record how many Farm-specific project files, manual choices and workflow edits each installation actually requires. Treat unnecessary setup and duplicated domain knowledge as product defects, not documentation problems.
-- Document how to change cadence and how to stop both roles. Explain what consumes credits and what native controls can enforce.
+- Document how to start with one role, add/remove roles, focus on a subsystem, change cadence and stop all enabled instances using native gh-aw settings. Explain what consumes credits and what native controls can enforce; no automated scaling controller is required.
 - Preserve upstream package-owned files and consumer-owned domain rules through updates. No new CLI or daemon.
 
 ### C2. Pilot in staged mode
@@ -65,8 +74,9 @@ Review all output paths and retained evidence; prove same-repository and maximum
 - At least one real learning cycle is reviewed and retained; a negative result counts.
 - Findings are bounded, attributable, appropriately scoped and quiet when there is nothing to publish.
 - No project-specific runtime, central service, custom package manager, bespoke configuration interpreter or general agent framework is needed.
+- Demonstrate a path from one bounded workflow to broader or deeper investigations, and back, through native composition and settings without changing the shared method or introducing a Farm-owned runtime. No Farm-owned service runs while idle.
 - Maintainers can explain permissions, limits, costs, artifact exposure and the stop procedure.
 
 ## Later, only with demonstrated demand
 
-More reusable methods and technology-specific guidance; independent verification and draft changes under separate authority; improved novelty checks and curation; native policy and evaluation components. Evaluate existing gh-aw and third-party capabilities first. Additional runtime code needs a specific unsolved problem and a narrow reviewable boundary.
+More reusable methods and technology-specific guidance; independent verification and draft changes under separate authority; improved novelty checks and curation; native policy and evaluation components. Evaluate existing gh-aw and third-party capabilities first. Additional executable helpers need a specific unsolved problem and a narrow reviewable boundary, preferably inside an existing job. A separate runtime or always-on service is outside the roadmap and would require a new architectural decision grounded in measured limits.
