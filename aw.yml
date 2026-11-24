@@ -8,7 +8,5 @@ includes:
   - workflows/farm-hunter.md
   - workflows/farm-gardener.md
 resources:
-  - source: .github/aw/farm/investigation.md
-    destination: .github/aw/farm/investigation.md
   - source: config/project.example.md
     destination: .github/aw/farm/project.example.md

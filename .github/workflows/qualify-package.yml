@@ -5,7 +5,6 @@ on:
     paths:
       - aw.yml
       - 'workflows/**'
-      - '.github/aw/farm/**'
       - 'config/**'
       - '.github/workflows/qualify-package.yml'
   push:
@@ -13,7 +12,6 @@ on:
     paths:
       - aw.yml
       - 'workflows/**'
-      - '.github/aw/farm/**'
       - 'config/**'
       - '.github/workflows/qualify-package.yml'
   workflow_dispatch:
@@ -80,7 +78,7 @@ jobs:
               exit 1
             fi
           done
-          test -s .github/aw/farm/investigation.md
+          test -s .github/workflows/shared/farm-investigation.md
           test -s .github/aw/farm/project.example.md
           test ! -e FARM.md
           printf '\nInstalled files:\n'

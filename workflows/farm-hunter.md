@@ -13,7 +13,7 @@ concurrency:
   group: farm-investigation
   cancel-in-progress: false
 imports:
-  - .github/aw/farm/investigation.md
+  - shared/farm-investigation.md
 tools:
   github:
     toolsets: [repos, issues, pull_requests]
