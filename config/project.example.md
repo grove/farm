@@ -1,37 +1,33 @@
-# Project farm profile (example)
+# FARM.md (optional example)
 
-Copy this file to `.github/aw/farm/project.md` in the consuming repository and adapt it. Delete all example entries that do not apply. This file supplies domain guidance; it cannot grant tool access, change a budget or override workflow permissions. The package must not own or overwrite your live profile.
+Most projects do not need this file. If you have additional domain knowledge or local workflow rules, create a root `FARM.md` and include only what is useful. This example is not live configuration. There are no required headings or fields; delete anything you do not need. Link to existing documents instead of copying them.
 
-## Project purpose and supported behavior
+For example, a small library might only need:
 
-Describe what the software does and who relies on it. Link to authoritative contracts and supported behavior; distinguish current contracts from proposed or historical material.
+> Keep the documented public API backward compatible. Do not simplify the compatibility adapter without exercising the compatibility tests. Prefer investigations of changed public interfaces. See CONTRIBUTING.md for the normal test entry point.
 
-- Example: `README.md` — supported public interfaces.
-- Example: `docs/contracts.md` — behavior and compatibility guarantees.
+A more complex project may benefit from a few extra notes:
 
-## Investigation territories
+## Domain knowledge
 
-Start with one or two important subjects. Specify a stable name, why it matters, the applicable contract, where the implementation lives, and which instruments can exercise it.
+- Link to the authoritative contracts if they are hard to discover or distinguish from historical material.
+- Describe invariants, necessary distinctions or compatibility constraints that cannot be inferred safely from code.
+- Explain which territories deserve extra attention, or are out of scope.
 
-- Example: Public API correctness — supported responses and error handling; API implementation and integration tests.
-- Example: Lifecycle and resource ownership — cleanup after cancellation and errors; lifecycle code and resource tests.
+## Hunter rules
 
-For a small project, a single territory is fine. Add more only when useful.
+- Specify a domain-specific correctness or evidence rule, e.g. compare observable outputs against an independent oracle rather than another path through the same implementation.
+- Link to existing focused tests and their limits when they are not obvious. Do not repeat a complete test inventory.
 
-## Approved instruments
+## Gardener rules
 
-List existing project commands, their prerequisites, expected run time, what they demonstrate and known limitations. Configure the necessary tools and dependencies separately in native gh-aw workflow frontmatter. No example command below is automatically authorized.
+- Explain necessary complexity, protected boundaries or stronger verification obligations, e.g. preserve externally visible error behavior when consolidating a lifecycle.
+- Exclude generated code or other areas where changes would be misleading.
 
-| Instrument | Command | Prerequisites / limit | Evidence and limitations |
-| --- | --- | --- | --- |
-| Example focused test | Replace with an existing reviewed command | Describe setup and time bound | Describe contract exercised and what it cannot establish |
+## Shared rules
 
-Use deterministic fixtures and non-production credentials, where required. If a command is not allowed or its prerequisites are missing, record a blocked result rather than working around the restriction.
+- Name exclusions, data restrictions or additional evidence requirements if not already documented.
+- Link to reviewed observations and private reporting guidance if they use unusual locations.
+- Mention approved experiment entry points where useful. The actual tools, dependencies, engine, credentials, budgets, network and publication authority remain trusted native gh-aw settings.
 
-## Local rules and exclusions
-
-Document important invariants, necessary complexity, compatibility concerns, excluded paths, sensitive subjects and forbidden data. Do not include secret values or production data.
-
-## Prior knowledge and curation
-
-Link to reviewed observations or existing documents and describe how maintainers triage findings. Specify the maintainer-owned private reporting route, or state that sensitive investigations are not permitted. State the person/team responsible for reviewing runs and the approved budget and cadence; enforce these through native configuration and provider controls, not prose alone.
+Use these rules to narrow scope and strengthen evidence, not to weaken Farm's boundaries. Never include secret values or production data. If a required experiment is unavailable or unsafe, the workflow must report its limitations. A missing optional file is not itself a reason to stop.

@@ -40,7 +40,7 @@ safe-outputs:
 
 # Hunter
 
-Your mission is to discover where confidence in the software's correctness, completeness or supporting evidence is unjustified. Follow the shared investigation method and the consuming project's profile.
+Your mission is to discover where confidence in the software's correctness, completeness or supporting evidence is unjustified. Follow the shared investigation method, existing repository conventions and any applicable local rules in the optional root `FARM.md`.
 
 - State one falsifiable hypothesis about an applicable contract, a public behavior, or an evidence instrument. Trace it into the actual code before selecting an experiment.
 - Prefer an existing approved focused test, independent oracle, property check, fault scenario or directly relevant recorded evidence. A missing test alone does not prove a defect.

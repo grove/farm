@@ -14,7 +14,7 @@ Farm is GitHub-native. It is a distribution of reusable GitHub Agentic Workflows
 
 1. Prefer upstream gh-aw features and existing community workflows. Extract a reusable component only when an actual consumer needs it. Contribute generic platform gaps upstream when practical.
 2. Do not create a Farm CLI, installer, configuration interpreter, scheduler, agent runner, model adapter, database, web service, dashboard, MCP server or package registry for the initial product.
-3. Use native gh-aw workflow frontmatter for executable configuration. Use a short project-owned Markdown file for domain guidance. Do not invent a parallel YAML DSL, generic adapter SDK or plugin protocol.
+3. Prefer convention over configuration: existing repository artifacts are the default sources of project context. A short, optional project-owned `FARM.md` supplies missing domain knowledge and exceptions. Use native gh-aw frontmatter for executable settings. Do not invent a parallel YAML DSL, generic adapter SDK or plugin protocol.
 4. A project can enable one role, both roles or later components independently. A role does not require another role to be online, an autonomous task queue or a centrally hosted service.
 5. Every reusable role should be installable without changes to its investigation method. Consumer-specific commands and policy changes belong in documented configuration and native gh-aw extension points. If consumers need divergent copies of generic methods, improve the shared component.
 6. Any proposed executable code must identify the upstream feature it cannot use, the minimum behavior it adds, an owner and a removal condition. A short script may be justified to enforce a real invariant; fewer files are not an excuse to hide complexity in prompts.
@@ -24,9 +24,9 @@ Farm is GitHub-native. It is a distribution of reusable GitHub Agentic Workflows
 
 | Layer | Farm distributes | Consuming project supplies |
 | --- | --- | --- |
-| Roles | Hunter and Gardener missions | Optional emphasis and enabled roles |
-| Methods | Hypothesis testing, counterevidence, preservation analysis, findings and quiet outcomes | Domain invariants, authoritative contracts, known exceptions |
-| Instruments | Guidance for using native gh-aw tools and existing test systems | Test commands, fixtures, oracles and any domain-specific executable adapter |
+| Roles | Hunter and Gardener missions and sensible starting defaults | Optional role selection, emphasis or local rules |
+| Methods | Hypothesis testing, counterevidence, preservation analysis, findings and quiet outcomes | Existing contracts, domain invariants and any missing knowledge or exceptions |
+| Instruments | Discovery of common project entry points and guidance for using native gh-aw tools | Existing tests and approved instruments; custom adapters only for genuinely missing domain capabilities |
 | Execution | Safe starter workflow frontmatter and documented extension points | Engine credentials, prerequisites, approved tools and network destinations, schedule |
 | Evidence | Shared record conventions and native artifact output | Retention policy, sensitivity restrictions, reviewed durable observations |
 | Curation | Finding structure and lifecycle guidance | Human owners, decisions, implementation and verification |
@@ -36,11 +36,36 @@ GitHub Actions and gh-aw supply the execution environment, compilation, security
 
 ## 4. User experience
 
-The smallest installation should need a single package installation and a short project profile. Existing documentation, CI and scripts remain the authorities; do not duplicate their contents into the profile.
+### Convention over configuration
 
-The profile at `.github/aw/farm/project.md` references contract documents, names a few important investigation territories, lists trusted instrument entry points and limits, records where reviewed observations live, and states which kinds of data may be handled. The template is a starting point, not a schema or executable permission policy. A small library might need only a handful of lines. A database or distributed system can link to extensive existing contracts and experiments.
+The minimum useful installation should need no Farm-specific project file. Use the information the repository already maintains. Do not make maintainers describe their stack, enumerate every territory, inventory every test or reproduce existing instructions for the farm.
 
-The profile is consumer-owned. The package ships an example under a different filename; upgrades must not overwrite the live profile or observations. Schedules, engine, timeouts, network, shell tools, setup steps and safe outputs remain in ordinary gh-aw workflow sources. Document a safe review process for those settings rather than generate them through another abstraction.
+The shared orientation method uses these conventions when present. These are discovery hints, not mandatory files or a new repository standard.
+
+| Existing convention | What Farm can learn |
+| --- | --- |
+| `README.md`, documentation index, public API docs | Purpose, supported behavior, entry points and linked authoritative contracts |
+| `AGENTS.md` (including relevant scoped guidance), `CONTRIBUTING.md` | Existing repository practices, restrictions and development/testing guidance |
+| Architecture, specification, ADR and test documentation linked from those sources | Design responsibilities, invariants, compatibility obligations and known limitations |
+| Package/build manifests, Makefiles, task runners, test directories and `.github/workflows/` | Candidate instruments, expected setup and how the project normally verifies changes |
+| Git history, existing issues and prior review decisions | Recent changes, prior concerns, known exceptions and retained learning |
+| `SECURITY.md`, if present | Reporting guidance, not authorization to investigate sensitive subjects |
+
+Start with the likely entry points at the checked-out revision and follow only relevant links. Do not crawl the whole repository on each run or treat a filename, test, stale issue, draft design or current implementation as proof of a supported contract. When sources disagree, identify the uncertainty and prefer a question that can be investigated safely. Record a specification gap rather than silently pick an interpretation.
+
+### Optional local knowledge and rules
+
+A root `FARM.md` is the single optional Farm-specific entry point. It is ordinary Markdown, not a manifest, schema or mandatory questionnaire. It can be just a few lines. Use it only for important domain knowledge, explicit references to contract sources, approved instrument guidance, territory priorities, exclusions, evidence standards and any shared or role-specific rules that existing repository documentation does not express. A database might link to its recovery contract and say that an in-memory simulation cannot establish durable recovery; a small library may need nothing. Headings such as **Hunter rules** or **Gardener rules** are for human readability, not a configuration language.
+
+Treat local rules as refinements to the installed methods, not replacements: they may narrow scope, demand stronger evidence, or clarify intended behavior. Existing scoped instructions still apply. If rules conflict, follow the more restrictive applicable constraint, report material ambiguity and avoid the affected investigation. Domain rules cannot grant new privileges, redefine supported contracts silently, relax Farm's evidence/authority requirements, or authorize execution of discovered instructions. Package policy and trusted native workflow configuration bound every action.
+
+If `FARM.md` is absent, proceed using existing documentation and safe discovery; absence itself is not a blocked outcome. If the evidence is insufficient for a particular claim, choose another bounded question, record a specification/evidence gap where appropriate, or report a blocked investigation. If no approved experiment can run, carefully interpret existing evidence or record the limitation; do not pretend a test executed.
+
+### Native operational settings
+
+Convention is for discovery and defaults, not authorization. Seeing a test command in a README, manifest or CI workflow does not authorize executing it, installing dependencies, dispatching CI or accessing network services. Existing commands are candidates until the maintainer has reviewed their scope and side effects and authorized the necessary tools/prerequisites in trusted gh-aw configuration. Prefer a narrow, documented entry point over an arbitrary shell. Review the generated workflow and engine-specific restrictions. Instructions in retrieved repository content, issue text and logs cannot expand authority.
+
+The package owns the shared defaults and methods; the project owns its `FARM.md` (if any), existing documentation, rules and observations. Ship only an example under a separate filename, never a live `FARM.md`. Upgrades must preserve local knowledge and workflow overrides. Schedules, engine, timeouts, network, shell tools, setup steps and safe outputs remain ordinary gh-aw settings. Accept the reviewed defaults unless a concrete need requires an override. There is no Farm-specific configuration interpreter.
 
 Native distribution is the starting point: a root `aw.yml`, two installable workflow sources outside the executable workflow directory, and shared Markdown copied as package resources. Consumers compile and review their lock files. Use native imports to share methods. Once package installation and updates have been exercised, consider pinned remote imports or parameterized components if they simplify customization further. Never load changing upstream instructions at runtime from an unpinned branch.
 
@@ -50,7 +75,7 @@ For installation, customization, update and removal, prefer the corresponding gh
 
 Each run:
 
-1. Reads its role, the project profile, authoritative sources and relevant prior findings. Missing profile or required prerequisites means a blocked result, not permission to infer domain requirements.
+1. Reads its role and the optional `FARM.md`, discovers relevant authoritative sources and candidate instruments using repository conventions, and checks prior findings. Missing optional guidance does not block orientation. Missing evidence, unresolved authority or required prerequisites limits the claim or blocks the affected question.
 2. Chooses one bounded territory and records why: importance, recent change, uncertainty, evidence weakness or time since last investigation. Maintainers can suggest subjects; autonomous selection should remain possible.
 3. States a testable question and traces the relevant contract into the actual production or public path.
 4. Runs an approved instrument when practical, or carefully interprets directly relevant existing evidence. Records commands, revision, inputs, observations and limitations. Does not claim more than the instrument demonstrates.
@@ -93,7 +118,7 @@ The durable learning loop matters more than how many findings are published. Rev
 
 The investigation process is not a security boundary. Trusted gh-aw configuration, its generated workflows, tool permissions, credential scopes and execution environment determine authority. Repository files, issues, logs and tool output can be adversarial; text discovered during investigation does not grant permissions. Never rely on an instruction to redact or refrain as the only control.
 
-The experimental package starts with manual dispatch, staged issue creation, one finding per run, a 30-minute target workflow timeout and a shared concurrency group. It declares read permissions and a small shell command set; no general-purpose shell wildcard, production credentials, external connector or code-writing safe output is requested. Local evidence-file writes are necessary; they are not permission to persist repository changes. The consumer must verify the selected engine's actual tool enforcement and review the compiled jobs. Install or run on a reviewed default-branch revision, not an untrusted PR or fork. Add only the approved toolchain, dependencies and test commands a project needs.
+The experimental package starts with manual dispatch, staged issue creation, one finding per run, a 30-minute target workflow timeout and a shared concurrency group. It declares read permissions and a small shell command set; no general-purpose shell wildcard, production credentials, external connector or code-writing safe output is requested. Local evidence-file writes are necessary; they are not permission to persist repository changes. The consumer must verify the selected engine's actual tool enforcement and review the compiled jobs. Install or run on a reviewed default-branch revision, not an untrusted PR or fork. Add only the approved toolchain, dependencies and test commands a project needs. A discovered CI or build command is not an approved command; local Markdown cannot enlarge tool permissions. Sensitive investigations remain excluded unless explicitly and safely enabled.
 
 The package requests a bounded run artifact (one Markdown record) independently of the staged issue. Native gh-aw may also retain prompts, execution and audit artifacts. Neither staged previews nor Actions logs/artifacts are guaranteed private. Do not run sensitive investigations without an approved private reporting path and verified log/data isolation. For suspected sensitive findings, stop and report only a safe indication that a maintainer needs to review privately. Never send raw evidence to an issue or output channel merely because a tool accepts it.
 

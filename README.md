@@ -26,12 +26,17 @@ After a tested release is published, a maintainer should be able to install the 
 gh aw add grove/farm@v0.1.0
 ```
 
-The installation should leave ordinary gh-aw Markdown workflows, generated lock files and a small project configuration example in the consuming repository. The maintainer copies the example to `.github/aw/farm/project.md`, describes the project's contracts and approved instruments, chooses an engine and configures authentication, reviews permissions and costs, and compiles the workflows with `gh aw compile`. Initially, runs are manually dispatched and issue creation is staged.
+The installation should leave ordinary gh-aw Markdown workflows, generated lock files and an optional example in the consuming repository. Farm discovers the existing project documentation, contributor instructions, build/test entry points and CI conventions. A project with sufficient existing guidance does not need a Farm-specific configuration file.
+
+If anything important is missing, add a short root `FARM.md` to express domain knowledge and local workflow rules. Link to existing contracts and instruments rather than restating them. No required fields or schema. The example is available at `.github/aw/farm/project.example.md` after installation.
+
+Review the native gh-aw engine, authentication, permissions, tools and costs, and compile with `gh aw compile`. Initially, runs are manually dispatched and issue creation is staged. Discovery of a command does not grant permission to execute it; approve any additional instruments through trusted native workflow settings.
 
 The first release must prove this flow in two independent repositories before we advertise it as working. See the [implementation plan](docs/roadmap.md).
 
 ## Design principles
 
+- **Convention over configuration:** discover ordinary repository conventions; ask maintainers only for domain knowledge or exceptions that cannot be inferred responsibly.
 - **Configuration over implementation:** install shared methods, adapt local rules, reuse existing tests.
 - **Native over custom:** use gh-aw and GitHub features before adding scripts, services, formats or abstractions.
 - **Evidence over activity:** useful learning matters; issue counts and agent activity do not.
@@ -43,7 +48,7 @@ The first release must prove this flow in two independent repositories before we
 
 - [Product and architecture](docs/design.md)
 - [Implementation and release plan](docs/roadmap.md)
-- [Project configuration example](config/project.example.md)
+- [Optional `FARM.md` example](config/project.example.md)
 - [Shared investigation method](components/investigation.md)
 - [Hunter](workflows/farm-hunter.md) and [Gardener](workflows/farm-gardener.md)
 - [Native gh-aw package manifest](aw.yml)

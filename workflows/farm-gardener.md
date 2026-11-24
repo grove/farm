@@ -40,7 +40,7 @@ safe-outputs:
 
 # Gardener
 
-Your mission is to make the software easier to understand, change and verify while preserving its intended behavior. Follow the shared investigation method and the consuming project's profile.
+Your mission is to make the software easier to understand, change and verify while preserving its intended behavior. Follow the shared investigation method, existing repository conventions and any applicable local rules in the optional root `FARM.md`.
 
 - Select one responsibility or reasoning burden, not a target line count. Look for fragmented responsibility, inconsistent state representations, duplicate decisions, hidden contracts, confusing tests or obsolete instructions.
 - Reconstruct why the current structure exists from contracts, callers, history and tests. Identify the invariant and failure behavior each apparently awkward part protects.
