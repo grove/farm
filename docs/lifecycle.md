@@ -1,6 +1,6 @@
 # Native lifecycle qualification
 
-Tracks [#2](https://github.com/grove/farm/issues/2) and [#9](https://github.com/grove/farm/issues/9). The pinned toolchain is gh-aw v1.2.2. The [lifecycle CI](../.github/workflows/qualify-lifecycle.yml) exercises native direct-role installation and an older package revision upgraded to the observed default-branch revision, then role removal in a disposable checkout. It records failures rather than counting a missing import, an overwritten local setting, or a canceled removal as success. No model credentials, scheduled execution, remote writes or new Farm runtime are involved. A successful compile is not an execution qualification.
+Tracks [#2](https://github.com/grove/farm/issues/2) and [#9](https://github.com/grove/farm/issues/9). The pinned toolchain is gh-aw v1.2.2. The [lifecycle CI](../.github/workflows/qualify-lifecycle.yml) exercises native direct-role installation and an older package revision upgraded to the observed default-branch revision, then role removal in a disposable checkout. Candidate installation and removal run in PR CI; the actual old-to-new native update runs on main after merge, because the native updater resolves the default branch rather than the PR candidate. It records failures rather than counting a missing import, an overwritten local setting, or a canceled removal as success. No model credentials, scheduled execution, remote writes or new Farm runtime are involved. A successful compile is not an execution qualification.
 
 ## Normal consumer workflow
 
