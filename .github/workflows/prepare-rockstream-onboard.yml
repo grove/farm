@@ -1,0 +1,83 @@
+name: Prepare RockStream Onboard (one-time)
+on:
+  push:
+    branches: [ci/prepare-rockstream-onboard]
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: trickle-labs/rockstream
+          ref: fb4ae43a7c082e22bd0756dd979baff647646c71
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: github/gh-aw/actions/setup-cli@399a445fe2d8926c616b54b1b82a16b5b2be4445
+        with:
+          version: v1.2.2
+      - name: Install only Onboard and compile restrictive local policy
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FARM_SHA: 976328fab435a11328927d423d421963b48d9e70
+          ROCK_SHA: fb4ae43a7c082e22bd0756dd979baff647646c71
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$ROCK_SHA"
+          test "$(git remote get-url origin)" = https://github.com/trickle-labs/rockstream
+          test ! -e FARM.md
+          test ! -e farm-onboarding.md
+          git remote set-url --push origin "$RUNNER_TEMP/nonexistent-push-target"
+          unset GH_REPO
+          gh aw version
+          gh aw add "grove/farm/workflows/farm-onboard.md@$FARM_SHA"
+          file=.github/workflows/farm-onboard.md
+          sed -i '/^timeout-minutes: 30$/a max-ai-credits: 100\nmax-daily-ai-credits: 100' "$file"
+          sed -i '/^  threat-detection:$/a\    max-ai-credits: 50' "$file"
+          sed -i 's/^engine: copilot$/engine:\n  id: copilot\n  copilot-sdk: true/' "$file"
+          sed -i '/^  bash:/c\  bash: false\n  cli-proxy: false' "$file"
+          sed -i '/^  github:$/a\    mode: local\n    allowed-repos: [trickle-labs/rockstream]' "$file"
+          printf '\n## Initial RockStream pilot boundary\n\nUse native file viewing and search and the configured GitHub read tools; shell is disabled. RockStream requires RTK for shell commands, so do not attempt direct shell or install RTK. Read the existing scoped guidance and respect structure-first exploration. Select one or two bounded territories, starting with the capability matrix and the relevant source/contract/test taxonomy; distinguish supported public reachability from internal implementation and planned behavior. Discover candidate instruments and prerequisites only; no Rust builds, tests, dependency downloads, Docker, external systems, live or production data, or security-sensitive findings. Do not inspect credentials, raw evidence logs, or broad evidence directories. Do not claim existing evidence was reproduced. The only authorized local edit is the single sanitized farm-onboarding.md proposal. Do not change any repository files. The public Actions logs and artifact are not a private reporting route.\n' >> "$file"
+          gh aw compile --validate --strict
+          lock=.github/workflows/farm-onboard.lock.yml
+          test -s "$lock"
+          grep -Fx '  bash: false' "$file"
+          grep -Fx '  cli-proxy: false' "$file"
+          grep -Fx '    allowed-repos: [trickle-labs/rockstream]' "$file"
+          grep -Fx 'max-ai-credits: 100' "$file"
+          grep -Fx '    max-ai-credits: 50' "$file"
+          grep -Fx '  workflow_dispatch:' "$file"
+          grep -F 'GH_AW_MAX_AI_CREDITS: "100"' "$lock"
+          grep -F 'GH_AW_MAX_AI_CREDITS="50"' "$lock"
+          grep -F 'GH_AW_COPILOT_SDK_TOOL_CONFIG:' "$lock" | grep -F '"bash":false'
+          grep -F '\"allowed-paths\":[\"farm-onboarding.md\"]' "$lock" >/dev/null
+          if grep -Eq 'create_report_incomplete_issue|name: Log detection run|GH_AW_DETECTION_CONTINUE_ON_ERROR: "true"|# --allow-tool shell\(|farm-output/|GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG:.*create_issue|GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG:.*create_pull_request' "$lock"; then
+            echo 'Unexpected execution or publication path'
+            exit 1
+          fi
+          test ! -e .github/workflows/farm-hunter.md
+          test ! -e .github/workflows/farm-gardener.md
+          git diff --exit-code HEAD
+          git status --short
+          # Transfer only new native installation files, not existing repository content.
+          mkdir -p "$RUNNER_TEMP/farm-install"
+          while IFS= read -r p; do
+            case "$p" in
+              .gitattributes|.github/aw/actions-lock.json|.github/skills/agentic-workflows/SKILL.md|.github/workflows/farm-onboard.md|.github/workflows/farm-onboard.lock.yml|.vscode/settings.json) ;;
+              *) echo "Unexpected native install file: $p"; exit 1 ;;
+            esac
+            mkdir -p "$RUNNER_TEMP/farm-install/$(dirname "$p")"
+            cp "$p" "$RUNNER_TEMP/farm-install/$p"
+            printf 'FARM_HASH %s %s\n' "$p" "$(git hash-object "$p")"
+            base64 -w 2048 "$p" | sed "s|^|FARM_DATA $p |"
+          done < <(git ls-files --others --exclude-standard)
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: rockstream-onboard-install
+          path: ${{ runner.temp }}/farm-install/
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error
