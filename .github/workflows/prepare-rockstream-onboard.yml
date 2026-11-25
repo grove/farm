@@ -39,11 +39,13 @@ jobs:
           sed -i '/^  threat-detection:$/a\    max-ai-credits: 50' "$file"
           sed -i 's/^engine: copilot$/engine:\n  id: copilot\n  copilot-sdk: true/' "$file"
           sed -i '/^  bash:/c\  bash: false\n  cli-proxy: false' "$file"
-          sed -i '/^  github:$/a\    mode: local\n    allowed-repos: [trickle-labs/rockstream]' "$file"
+          sed -i '/^  github:$/a\    mode: local\n    allowed-repos: [trickle-labs/rockstream]\n    min-integrity: approved' "$file"
           printf '\n## Initial RockStream pilot boundary\n\nUse native file viewing and search and the configured GitHub read tools; shell is disabled. RockStream requires RTK for shell commands, so do not attempt direct shell or install RTK. Read the existing scoped guidance and respect structure-first exploration. Select one or two bounded territories, starting with the capability matrix and the relevant source/contract/test taxonomy; distinguish supported public reachability from internal implementation and planned behavior. Discover candidate instruments and prerequisites only; no Rust builds, tests, dependency downloads, Docker, external systems, live or production data, or security-sensitive findings. Do not inspect credentials, raw evidence logs, or broad evidence directories. Do not claim existing evidence was reproduced. The only authorized local edit is the single sanitized farm-onboarding.md proposal. Do not change any repository files. The public Actions logs and artifact are not a private reporting route.\n' >> "$file"
           gh aw compile --validate --strict
           lock=.github/workflows/farm-onboard.lock.yml
           test -s "$lock"
+          grep -Fx '    min-integrity: approved' "$file"
+          grep -Fx "source-sha: \"$FARM_SHA\"" "$file"
           grep -Fx '  bash: false' "$file"
           grep -Fx '  cli-proxy: false' "$file"
           grep -Fx '    allowed-repos: [trickle-labs/rockstream]' "$file"
