@@ -65,6 +65,8 @@ jobs:
               record=farm-onboarding.md
             else
               record=farm-investigation.md
+              grep -F '      question:' "$lock" >/dev/null
+              grep -F 'Optional bounded investigation question and required evidence (no new authority)' "$lock" >/dev/null
             fi
             grep -F "allowed-paths: [\"$record\"]" ".github/workflows/farm-$role.md"
             grep -F '\"allowed-paths\":[\"'"$record"'\"]' "$lock" >/dev/null
