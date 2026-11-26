@@ -2,149 +2,136 @@
 
 *Continuous cultivation of software*
 
-**Status:** Proposed direction, not a commitment to features or a change to the current architecture.
+**Status:** Proposed product direction. See [product and architecture](design.md) for operational requirements.
 
 ## 1. The vision
 
-Farm should make continuous cultivation a normal part of software development, just as continuous integration has made continuous verification a normal part of development.
+Farm should make continuous cultivation as natural as continuous integration. CI tells us whether software passes the checks we have written. Farm asks which important guarantees those checks have not yet tested.
 
-Software may work well while our understanding of it remains incomplete. Farm systematically challenges assumptions, tests guarantees and explores simplifications so software becomes **more correct, simpler, better understood and easier to evolve**.
+The first users are maintainers of **high-reliability infrastructure libraries**, such as storage engines, parsers and authentication libraries. These projects have consequential correctness requirements, runnable test suites and relatively well-defined boundaries. A subtle logic bug that survives ordinary CI can be worth considerably more than the cost of finding it.
 
-Maintainer attention is Farm's scarcest resource. A plausible but incorrect finding can take far longer to disprove than it took an agent to produce. Farm must save more engineering attention than it consumes, including the time spent rejecting its mistakes. If maintainers have to investigate Farm's claims for it, Farm has failed.
+Imagine returning to a mature project after a weekend and finding one short, reproducible test that exposes a failure nobody thought to exercise. Or finding a receipt showing that a previously untested recovery scenario survived a deliberately challenging experiment. Over time, those investigations become better tests and stronger confidence in the software.
+
+Maintainer attention is Farm's scarcest resource. Farm must save more engineering attention than it consumes, including the time spent rejecting its mistakes. If maintainers have to investigate Farm's claims for it, Farm has failed.
 
 ## 2. Why a software farm?
 
-AI is making code cheaper to produce, but knowing what to build, what to preserve and what to trust remains hard. As implementation capacity grows, so must our capacity for judgment.
-
-A software factory starts with work to be done. A software farm starts with a question worth investigating.
+AI is making code cheaper to produce. Deciding what to build and establishing whether it works are becoming the harder problems.
 
 | Software factory | Software farm |
 | --- | --- |
-| Implements a chosen change | Discovers whether a change is worthwhile |
-| Works toward a defined outcome | Investigates an uncertain outcome |
-| Produces working software | Produces evidence, knowledge and recommendations |
-| Measures successful delivery | Measures useful learning |
+| Starts from work to be done | Starts from a question worth investigating |
+| Implements a chosen change | Tests whether a change is warranted |
+| Produces working software | Produces evidence and reusable verification |
 
-Farm should complement software factories, not become one.
+Farm complements a software factory rather than replacing one. Its initial product is not more code or more review comments, but discoveries that make existing software more trustworthy.
 
-## 3. The work of a farm
+## 3. Start with Hunter
 
-| Perspective | Central question | Contribution |
-| --- | --- | --- |
-| **Hunter — Correctness** | What might be wrong or insufficiently demonstrated? | Reproducible evidence of defects, violated contracts and material verification gaps. |
-| **Gardener — Simplicity** | What could be easier to understand, change or verify? | Demonstrated opportunities to reduce complexity while preserving required behavior. |
+**Hunter — What important behavior has not been demonstrated, and can we break it?**
 
-Future directions include knowledge curation, independent re-examination, performance research and system health where questions can be answered with evidence. Explore these as methods within existing roles before considering any new role with a demonstrated, distinct need.
+Hunter looks for consequential defects that the project's existing tests and tools miss. Its advantage should be the ability to connect context across APIs, tests, callers and implementation, formulate a new property or failure scenario, and turn it into an executable experiment.
 
-## 4. Investigation as a discipline
+A fuzzer explores the inputs and properties it is given. A linter or sanitizer checks the rules it knows. Hunter should use these instruments, not compete with them: the interesting work is choosing a new oracle, combining operations into a meaningful sequence or discovering which production path existing tests never exercise. Where a deterministic tool can already find a problem, use that tool.
 
-All investigations follow a common method:
+**Gardener — What could be simpler?** remains a possible later direction, not part of the first product horizon. Routine mechanical cleanup is often better served by static analysis, while substantial refactoring is costly to verify and review. Reconsider Gardener only after Hunter demonstrates repeatable value and a separate case for simplification beyond existing tools can be made. Any eventual simplification finding needs measurable or concrete benefit and checkable preservation of relevant behavior, including edge cases; passing existing CI alone is insufficient.
 
-1. Select a bounded, consequential question and identify the relevant contract or invariant.
-2. Screen using cheap checks and existing evidence.
-3. State a hypothesis, what would falsify it and a resource budget.
-4. Examine the actual system with authorized instruments and seek counterevidence.
-5. Validate the result, record its limits and check for duplicates.
-6. Publish only if the evidence and materiality requirements are met; otherwise stop quietly.
+## 4. What Hunter could discover
 
-### Proof before interruption
+These are illustrative scenarios, not claims of defects Farm has already found.
 
-Farm bears the burden of making a consequential claim inexpensive to check.
+### Example 1: A parser loses the final bytes of a stream
 
-**Hunter.** Require an executable reproduction, a failing test or a concrete, checkable counterexample to an identified contract or verification claim. Include the affected revision, assumptions, expected and observed behavior, and reproduction instructions. A test that invents a requirement or exercises only an unsupported path is insufficient; textual arguments alone do not justify unsolicited findings.
+A Go parser accepts an `io.Reader`. Its documentation is sparse, but its tests establish the expected parse result for valid input, and Go's reader contract permits a read to return both bytes and an end-of-file indication. CI exercises ordinary readers that return EOF separately from the final bytes.
 
-When a domain contract is missing or unclear, restrict defect claims to independently established invariants, such as unexpected panics on supported inputs, demonstrable resource leaks, data races that violate the language or runtime rules, or security boundary violations. Do not infer business rules from implementation details; record contract uncertainty in the run record instead of presenting it as a defect.
+Hunter notices that the streaming loop checks the error before consuming those bytes. It constructs a conforming reader that returns the final chunk and `io.EOF` together, then compares the result with the existing test fixture. The parser truncates the input or returns an incorrect result. The oracle comes from the standard interface and an existing expected result, not an invented business rule.
 
-**Gardener.** Simplification is more subjective than correctness and generally carries a higher review risk. Initially restrict investigations to demonstrably safe mechanical wins (such as dead code, redundant state and unreachable branches) or well-tested boundaries where preservation can be established. Require a bounded candidate diff or experiment, concrete evidence of reduced complexity, and evidence that relevant behavior and constraints are preserved, including edge cases and indirect uses. Passing existing CI or reducing line count is not sufficient; use targeted characterization, differential or property tests, or a checkable equivalence argument as appropriate. Withhold findings when preservation cannot be demonstrated; broaden scope only after earning trust.
+A small deterministic regression test reproduces the failure on the current revision. The maintainer can run it, accept the finding and fix the loop. The same test protects future changes. A conventional input fuzzer using the original reader harness might never reach this I/O boundary; Hunter's contribution is the new harness and the property it checks.
 
-Retain useful uncertainty in bounded run records, not speculative issues. Requested run summaries and operational failures must not bypass the finding gate; sensitive findings follow the project's authorized disclosure process.
+### Example 2: An acknowledged transaction disappears after recovery
 
-Deduplicate against known issues, stage publication until qualified, and bound unsolicited findings by a maintainer-approved attention budget. Narrow or suspend activity when false positives impose excessive review costs.
+A storage engine promises that acknowledged commits survive a process interruption. Existing CI tests commits, checkpoints and restart separately; it does not combine them at a particular persistence boundary.
 
-### Spend compute where it matters
+Hunter traces the commit and checkpoint paths and identifies a candidate interval where recovery might consult an outdated checkpoint. Using an approved fault-injection harness, it commits a known value, triggers checkpointing, interrupts the process at the selected point, reopens the store and checks that value. Suppose recovery returns the old value despite the commit having succeeded.
 
-An investigation is worth its cost when the consequence of the question, its tractability and the expected value of learning justify the resources required. Use tiered execution:
+The finding includes the failing reproduction, baseline revision and relevant durability guarantee. A maintainer accepts the evidence, a developer fixes recovery, and the project keeps the experiment as a regression test. Hunter has added a meaningful state-transition sequence and a durability oracle to CI, not merely run a generic crash detector.
 
-- **Cheap screening:** existing deterministic checks, change history, relevant prior evidence and, where useful, smaller models; signals are leads, not findings.
-- **Focused investigation:** bounded context, approved tools and a modest allowance; stop when resolved or meaningful progress is unlikely.
-- **Deep investigation:** more capable models, larger experiments or independent replication only when risk, uncertainty and expected value justify escalation.
+## 5. Investigation as a discipline
 
-Set per-run and cumulative budgets for model usage, compute and experiments. Quiet and inconclusive outcomes can be valuable, but repeated expensive reconfirmation of stable behavior is not sustainable. Reduce cadence, narrow scope or stop when marginal value no longer justifies cost.
+Hunter selects one consequential question, finds the best available evidence for the intended behavior, chooses an appropriate instrument, and tries to falsify its hypothesis. It records counterevidence and limitations before drawing a conclusion.
 
-## 5. Learning that accumulates without going stale
+Explicit specifications are useful but not essential. Public interfaces, external standards, existing assertions and independently verified relationships between supported operations can establish testable expectations even in a poorly documented repository. Compare alternate paths, round trips, operation sequences or equivalent inputs when there is evidence that their results should agree. If the intended relationship is ambiguous, do not guess business logic: investigate an independently established invariant or record the uncertainty without reporting a defect.
 
-Retained knowledge is a maintenance obligation. Prefer **executable memory**: reviewed regression tests, property tests, assertions and reproducible experiments in the project's existing verification suite. A passing test does not establish a contract it was never designed to exercise.
+**Proof before interruption.** An actionable defect needs an executable reproduction, failing test or concrete, independently checkable counterexample tied to the relevant contract or invariant, with expected and observed behavior. Farm reports novel, consequential results, not suspicions or generic missing-test inventories.
 
-When prose is necessary, for example to explain design rationale or experimental limitations, use existing specifications, architecture decisions and scoped guidance sparingly. Every retained prose conclusion must identify:
+**Value before compute.** Start with existing deterministic tools and inexpensive screening; use bounded model-assisted investigation only where context and experiment design can add value. Escalate to deeper work when risk, tractability and expected learning justify it. Set per-run and cumulative budgets and reduce cadence or stop when marginal value falls. Details of qualification and publication are in [the architecture](design.md).
 
-- Its authoritative contract or assumption and the revision at which evidence was obtained.
-- The supporting evidence or verification procedure.
-- Exact paths, symbols, contract versions or other versioned dependencies whose change invalidates it, or the baseline commit if a narrower boundary cannot be established.
+## 6. Make even quiet runs useful
 
-Changes to these dependencies invalidate the conclusion until revalidated. If validity cannot be established, treat it as historical context rather than current truth. Prefer existing repository and CI mechanisms to detect changes and rerun checks, not a parallel knowledge base or memory service.
+A run that finds no defect should leave a short, factual **coverage receipt**. It shows what was attempted, what was actually exercised, the result, its limits and what it cost. It is not a claim that the software is bug-free.
 
-The project owns its knowledge; agent observations become authoritative only through maintainer review. Retain only lessons worth maintaining, and retire those that no longer apply.
+For example, an illustrative receipt might read:
 
-## 6. How cultivation and delivery work together
+| | |
+| --- | --- |
+| Question | Does parsing depend on how a stream is chunked? |
+| Scope | Streaming parser; valid fixture set at the tested revision |
+| Experiment | Compare whole-buffer results with 24 chunking schedules, including bytes returned with EOF |
+| Result | All 24 matched the expected results |
+| Limits | Malformed inputs and cancellation not tested |
+| Resources | 6 minutes; $0.70 in model and runner costs (illustrative) |
 
-**Investigate → learn → decide → implement → verify → investigate again.**
+Receipts belong in ordinary run records, with an optional compact aggregate summary showing newly exercised scenarios, outcomes and total spend. They should be based on actual experiment records, not model guesses about coverage. Distinguish a completed experiment from a blocked, failed or inconclusive run.
 
-Suppose a database promises to recover committed data after an interruption. Hunter produces a failing reproduction against that guarantee. A maintainer checks and accepts the finding; a developer or factory fixes it. A fresh investigation checks the original claim against the new version, and the project preserves the lesson as a regression test.
+This makes weeks without findings intelligible without forcing maintainers to read every report. If repeated runs add no new useful evidence, spend less or stop. No activity or finding quotas.
 
-GitHub issues can connect cultivation to ordinary development or an optional delivery system such as Gas City. An agent's finding must not automatically become an implementation instruction. Maintainers control priorities, contracts, changes and releases.
+## 7. Learning that survives
 
-## 7. A small foundation that can grow
+Farm's durable memory should be executable: reviewed regression tests, property tests, assertions and benchmarks that encode important lessons and can be rerun as the software changes. Promote those lessons through the project's ordinary development process.
 
-Farm distributes reusable investigation practices and native GitHub Agentic Workflows. Projects can start with one manually triggered investigation using existing documentation and tools, without a Farm-operated service or database.
+Design rationale and experiment notes can remain in normal issues, PR descriptions, commit messages or existing project documentation. Treat them as historical context unless confirmed against the current system; do not build a Farm prose knowledge base, dependency-tracking scheme or revalidation notification queue.
 
-Investigations executing project code, builds, containers or fuzzers must use isolated, ephemeral, network-restricted sandboxes with least-privilege credentials and explicitly authorized commands and destinations. Experimental code must not receive model-provider credentials, repository write tokens, unrelated secrets or privileged host or container-daemon access. Enforce hard wall-clock, token or equivalent provider-enforced model-usage, compute and concurrency limits outside agent prompts; bound output, control publication and terminate experiments at their limits. If the workflow, runner or engine cannot enforce these controls, disable the experiment or unattended mode until it can. These are qualification requirements, not claims about current capabilities.
+A successful investigation is especially valuable when its result can become an inexpensive deterministic check, so future runs do not need to pay a model to rediscover it.
 
-Keep capabilities independently useful and scale up or down in response to demonstrated need. Express methods without unnecessary engine dependencies, but avoid generic runtime abstractions or multiple distributions before they are needed. A native Gas City distribution or other runtime would require a separate decision and equivalent safeguards.
+## 8. A small foundation
 
-## 8. Principles that should endure
+Farm distributes reusable investigation methods and native GitHub Agentic Workflows. Start with a single manually triggered Hunter in an existing repository, a narrow scope and its approved instruments. No Farm-owned service, database or generic orchestration platform is needed.
 
-- **Proof before interruption.** Make consequential findings cheap to verify.
-- **Evidence before action.** Distinguish hypotheses, observations, supported conclusions and decisions.
-- **Executable memory before prose.** Retain learning that can be checked against changing software.
-- **Value before compute.** Use the cheapest adequate method within explicit budgets.
-- **Learning before output.** Accept quiet outcomes and reject issue or activity quotas.
-- **Simplicity before machinery.** Prefer existing conventions, tools and native capabilities.
-- **Local ownership and enforced authority.** Projects control contracts, data, credentials, knowledge and budgets; investigations grant no implicit write, disclosure or access privileges.
-- **Gradual, reversible growth.** Expand scope and autonomy only with demonstrated value, reviewed risks and meaningful human oversight.
+Investigations must run within isolated, network-restricted, least-privilege environments with enforced resource and publication limits. Where those controls cannot be qualified, do not enable the affected experiment or unattended operation. The detailed requirements belong in [the architecture and security boundaries](design.md#8-authority-safety-and-defaults).
+
+Maintainers own contracts, credentials, findings and decisions. Accepted findings can enter ordinary development or an optional factory such as Gas City; implementation remains outside Farm's authority. Alternative runtimes require a separate decision justified by demonstrated need.
 
 ## 9. A possible path forward
 
-These are development horizons, not release dates.
+These horizons describe evidence of readiness, not promised features or release dates.
 
 | Horizon | Focus | Evidence of readiness |
 | --- | --- | --- |
-| **Establish the foundation** | Qualify installation, execution safeguards, Hunter, Gardener and onboarding. | Reproducible, economical findings; enforced controls hold. |
-| **Make learning cumulative** | Improve evidence quality, deduplication and knowledge retention. | Reviewed lessons remain useful as code evolves. |
-| **Broaden cultivation** | Add proven methods, better screening and optional delivery integration. | Distinct value within review and compute budgets. |
-| **Grow with complex systems** | Explore coordinated and cross-project investigations or alternative runtimes. | Observed needs justify added complexity, cost and risk. |
-
-Qualify the evidence, review economics and execution boundaries before enabling recurring unattended operation or publication.
+| **Prove Hunter** | Qualify Hunter and onboarding in a few high-reliability infrastructure libraries; start with targeted manual investigations. | Novel, reproducible defects missed by existing CI and tools, with low review burden and qualified execution safeguards. |
+| **Make cultivation routine** | Improve experiment selection, receipts and executable memory; enable bounded recurring investigations. | Repeatable incremental value, useful quiet runs and sustainable total cost. |
+| **Broaden carefully** | Expand proven methods and factory integration; evaluate whether Gardener or other capabilities offer distinct value. | Each addition outperforms simpler alternatives within review and compute budgets. |
+| **Grow with complex systems** | Explore coordinated investigations and other execution environments only as needed. | Concrete limitations and benefits justify the additional complexity. |
 
 ## 10. How we know Farm is succeeding
 
-Measure outcomes, not activity:
+Compare Hunter with the project's existing verification process, not with a world without tests.
 
-- **Review economics:** time validating, dismissing and deduplicating findings; precision, materiality and value relative to review effort.
-- **Compute economics:** model and experiment costs across all runs (including quiet, blocked and inconclusive runs), cost per accepted useful finding or validated learning outcome, and marginal benefit of deeper investigations.
-- **Software outcomes:** reproducible findings, stronger verification of important guarantees and demonstrably simpler software.
-- **Knowledge health:** continuing usefulness of executable checks, prose maintenance costs, stale conclusions prevented from influencing work, and avoided repeat investigations.
-- **Safety and coverage:** whether execution controls hold and whether screening or publication misses important problems; evaluate against known cases and sampled quiet outcomes when practical.
+- **Incremental value:** consequential defects and new useful executable checks that existing CI, linters, fuzzers or sanitizers did not already produce.
+- **Review economics:** time spent verifying, rejecting and deduplicating findings, their precision and materiality, and the value delivered relative to that effort.
+- **Compute economics:** total model and experiment cost across all runs, including quiet and unsuccessful runs, relative to accepted findings or validated learning.
+- **Confidence and learning:** new consequential scenarios actually exercised, limitations of that evidence, and lessons retained as executable checks.
+- **Safety and coverage:** whether execution limits hold and important problems are missed; use known cases, comparable baselines and sampled quiet outcomes where practical.
 
-Use project-specific thresholds to increase, narrow, pause or stop activity. There is no universal acceptable cost per finding or false-positive rate.
+Use project-specific thresholds to decide whether to continue, narrow or stop. Do not infer reliability from an absence of findings.
 
 ## 11. The ambition
 
-Continuous integration helps us know whether a change satisfies the checks we have defined. Continuous cultivation helps us discover whether those checks are sufficient, whether our assumptions remain valid, and whether we are investing effort in the right things.
+A mature infrastructure library is not finished simply because its tests are green. There are still questions worth asking about how it behaves under unusual combinations of otherwise valid operations.
 
-Farm should make this inquiry accessible to ordinary software projects, from a small library to a complex long-lived system.
+Start by proving that Hunter can ask and answer those questions better than the existing toolchain alone. If it succeeds, continuous cultivation can become a routine complement to CI: a way to discover the next important test before a user discovers the next important bug.
 
-**A software factory helps us build software. A software farm helps us understand what software is worth building, what is worth preserving, and what can be trusted.**
+**A factory builds software. A farm grows the evidence that it can be trusted.**
 
 ---
 
-Related documents: [Farm README](https://github.com/grove/farm), [product and architecture](https://github.com/grove/farm/blob/main/docs/design.md), and [shared investigation method](https://github.com/grove/farm/blob/main/workflows/shared/farm-investigation.md). These describe the existing design; this proposed vision extends it without superseding it.
+Related documents: [Farm README](../README.md), [product and architecture](design.md), and [shared investigation method](../workflows/shared/farm-investigation.md).
