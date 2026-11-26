@@ -26,6 +26,8 @@ A factory delivers a change. A farm produces evidence that helps someone decide 
 
 The two practices can work closely together. An investigation may involve writing a test or building a prototype; implementation often involves discovery of its own. A farm might eventually hand a finding to a factory and investigate the result of its work. The distinction lies in the purpose of the work and the authority to act, not in the tools used. Maintainers decide which findings to act on, and production changes go through the project's ordinary delivery process.
 
+**Investigate → learn → decide → implement → verify → investigate again.**
+
 ## What a farm cultivates
 
 ### Correctness
@@ -56,9 +58,11 @@ A farm will never run out of possible questions. Choosing among them is an impor
 
 ## A farm that earns trust
 
-The maintainer's time is the limiting resource. A farm should do the work necessary to make its findings inexpensive to verify. Show the evidence, consider alternative explanations and be clear about what an experiment has and has not established. Use deterministic tools when they can answer the question, and reserve more expensive investigations for problems that warrant them.
+The maintainer's time is the limiting resource. Three principles follow from this:
 
-A negative result can be useful if it tells us something we did not know. A brief record of what was tested and what remains uncertain is often enough. There should be no quota for findings and no need to open an issue just to show that a run took place.
+- **Proof before interruption.** Make findings inexpensive to verify. Show the evidence, consider alternative explanations and be clear about what an experiment has and has not established.
+- **Evidence over activity.** A negative result can be useful if it tells us something we did not know. A brief record of what was tested and what remains uncertain is often enough. There should be no quota for findings and no need to open an issue just to show that a run took place.
+- **Value before compute.** Use deterministic tools when they can answer the question. Reserve more expensive investigations for problems that warrant them.
 
 Continuous cultivation does not mean running all the time. A stable library may need only an occasional investigation; a rapidly changing system may justify more frequent attention. Reduce the frequency or stop when the work is no longer yielding useful knowledge.
 
@@ -71,6 +75,8 @@ The first step is to prove Hunter on real infrastructure libraries where correct
 The [roadmap](roadmap.md) sets out how to test that approach. The [architecture](design.md) describes the current GitHub-native design and its operating boundaries.
 
 ## The ambition
+
+Every software project has a backlog of things it knows it wants to do. It also has a much larger, mostly invisible landscape of questions it has not thought to ask.
 
 Years from now, the maintainers of a well-cultivated project should inherit software they can understand and change with confidence, along with the evidence to justify that confidence.
 
