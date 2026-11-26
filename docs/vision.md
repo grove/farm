@@ -24,13 +24,15 @@ AI is making code cheaper to write. The cost of maintaining unnecessary code rem
 
 A factory delivers a change. A farm produces evidence that helps someone decide whether a change is warranted. Discovering that the existing design is sound is a perfectly good outcome.
 
-The two practices can work closely together. An investigation may involve writing a test or building a prototype; implementation often involves discovery of its own. A farm might eventually hand a finding to a factory and investigate the result of its work. The distinction lies in the purpose of the work and the authority to act, not in the tools used. In Farm's current design, maintainers decide which findings to act on. Over time, a project may delegate some decisions under explicit policies, but that authority must remain bounded, accountable and revocable. Production changes go through the project's ordinary delivery process.
+The two practices can work closely together. An investigation may involve writing a test or building a prototype; implementation often involves discovery of its own. A farm might eventually hand a finding to a factory and investigate the result of its work. The distinction lies in the purpose of the work and the authority to act, not in the tools used. For now, maintainers decide which findings to act on, and production changes go through the project's ordinary delivery process.
+
+A project may eventually delegate some of these decisions to a farm. The maintainers should be able to specify which decisions the farm can make, review what it did and why, and withdraw that permission.
 
 **Investigate → learn → decide → implement → verify → investigate again.**
 
 ## What a farm cultivates
 
-A farm seeks to reduce uncertainty that matters to the project and the people who depend on it, while making the software easier to understand and change. Correctness and simplicity are natural starting points. Performance, security, resilience, usability and the continued usefulness of existing functionality can also raise questions worth investigating.
+A farm investigates uncertainties that matter to the people who maintain or use the software. Farm begins with correctness and simplicity. Other investigations might concern how the system behaves under load or when a dependency fails, where its security assumptions break down or whether a feature still serves its users.
 
 ### Correctness
 
@@ -52,17 +54,17 @@ The point of simplification is to make the system easier to reason about without
 
 A good investigation leaves something behind that the project can use again. A regression test for a lost transaction can run years after the original investigation has been forgotten. A benchmark, property or assertion can preserve a discovery in much the same way. Other findings are best kept as explanations: why, for instance, a recovery protocol requires a particular ordering of writes.
 
-Such knowledge belongs in the project's own tests, documentation and engineering records, where maintainers can review it and keep it current. It should outlive any particular farm or model. A farm may use its own working memory or indexes, but replacing them should not mean losing the project's accumulated knowledge.
+Such knowledge belongs in the project's own tests, documentation and engineering records, where maintainers can review it and keep it current. It should outlive any particular farm or model. If a farm keeps its own memory or index, the project should be able to discard it without losing what it has learned.
 
-Knowledge itself needs cultivation. A test can preserve an assumption that is no longer valid; an explanation may describe a design that no longer exists. Earlier conclusions should be revisited when their premises change. Retire or correct stale evidence rather than let it accumulate unchecked.
+What the project learns may not hold forever. A benchmark may reflect a workload the system no longer serves. A test may still enforce a guarantee the project has since dropped. Earlier findings need revisiting when their assumptions change, and obsolete tests and explanations should be corrected or removed.
 
-As reliable knowledge accumulates, the software should become easier to investigate. Better tests make stronger experiments possible, simpler designs make hypotheses easier to formulate and good explanations help engineers and agents build on earlier work rather than repeat it. Cultivation should improve the conditions for future cultivation.
+As this knowledge accumulates, the software should become easier to investigate. Engineers and agents alike can build on earlier work rather than repeat it. The test for the lost transaction, for instance, might make the next crash experiment much cheaper to set up. A simpler recovery protocol would leave fewer cases to reason about.
 
 ## Choosing the next question
 
-A farm will never run out of possible questions. Choosing among them is central to the practice, particularly as the cost of investigating any one question falls. The consequence of being wrong, the strength of existing evidence, the cost of obtaining better evidence and the likelihood that it will inform a useful decision should all influence that choice.
+A farm will never run out of possible questions. Choosing among them is an important part of the work, especially as investigations become cheaper to carry out. A consequential guarantee backed by weak evidence may deserve more attention than an easy investigation with little practical value. How much would it cost to learn more, and what could the maintainer do with the answer?
 
-A consequential guarantee backed by weak evidence may deserve more attention than an easy investigation with little practical value. Recent changes can suggest new questions, but important areas that have long been overlooked deserve attention too. The next worthwhile question might concern performance, an alternative design or a change in the project's operating conditions. New methods and roles should be added when they prove useful. The aim is not to answer as many questions as possible, but to ask the questions that matter most.
+Recent changes can suggest questions, but so can parts of the system that have gone unexamined for years. New methods and roles should be added when they prove useful.
 
 ## A farm that earns trust
 
@@ -74,7 +76,7 @@ The maintainer's attention is a scarce resource. Three principles follow from th
 
 Continuous cultivation does not mean running all the time. A stable library may need only an occasional investigation; a rapidly changing system may justify more frequent attention. Reduce the frequency or stop when the work is no longer yielding useful knowledge.
 
-Software cultivation is a practice, not a particular runtime or model. Farm should use the tools and conventions of the projects it serves. Those projects own their knowledge, resources and decisions. Investigations must stay within approved execution boundaries. Increases in scope, cost or autonomy should be justified by experience.
+Farm should use the tools and conventions of the projects it serves. Other software farms may use different platforms and models. Those projects own their knowledge, resources and decisions. Investigations must stay within approved execution boundaries. Increases in scope, cost or autonomy should be justified by experience.
 
 ## Start small, think long-term
 
