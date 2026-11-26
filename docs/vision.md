@@ -71,27 +71,19 @@ Imagine a service that maintains two overlapping sources of truth. Rather than s
 
 Simplification is valuable when it reduces the reasoning burden of future engineers, not merely the number of lines of code.
 
-### Understanding
+## Learning that compounds
 
 *What do we know, why do we believe it, and what remains uncertain?*
 
-Learning is a shared outcome of every Farm investigation. Projects should accumulate stronger evidence, clearer contracts and a better understanding of the choices they have made.
-
-An investigation can clarify why a recovery guarantee needs a particular ordering constraint, reveal the limits of a benchmark, or establish that a seemingly redundant check protects an important edge case. Where possible, that knowledge becomes executable evidence. Reviewed rationale and decisions belong in the project's existing documentation and engineering records.
-
-Farm should also make room for new questions: opportunities to improve performance, compare designs or reconsider assumptions in light of new evidence. New perspectives should earn their place through demonstrated value, not through an expanding cast of agent personas.
-
-These examples describe the ambition, not capabilities Farm has already demonstrated or promised for its first release.
-
-## Learning that compounds
-
 The lasting product of a farm is not its latest report. It is the improvement in what a project knows and can verify.
 
-A useful discovery can become a regression test, a property, an assertion or a repeatable benchmark. A lesson encoded this way can be checked against later changes without paying an agent to rediscover it. Other lessons, such as design rationale, can be preserved through the project's normal review process.
+An investigation can clarify why a recovery guarantee needs a particular ordering constraint, reveal the limits of a benchmark, or establish that a seemingly redundant check protects an important edge case. A useful discovery can become a regression test, a property, an assertion or a repeatable benchmark. These lessons can be checked against later changes without paying an agent to rediscover them.
 
-Executable evidence is preferred where possible, but it is not the only valuable form of engineering knowledge. Farm should strengthen the project's own knowledge, not create a parallel memory system that must be maintained.
+Executable evidence is preferred where possible, but it is not the only valuable form of engineering knowledge. Reviewed rationale and decisions belong in the project's existing documentation and engineering records. Farm should strengthen the project's own knowledge, not create a parallel memory system that must be maintained.
 
 A well-cultivated system should become easier to investigate as it grows. More of its important behavior is explicit, more of its assumptions can be tested and less effort is wasted rediscovering old lessons.
+
+Farm should also make room for new questions: opportunities to improve performance, compare designs or reconsider assumptions in light of new evidence. New perspectives should earn their place through demonstrated value, not through an expanding cast of agent personas.
 
 ## A farm that earns trust
 
@@ -123,8 +115,6 @@ Every software project has a backlog of things it knows it wants to do. It also 
 A mature software engineering practice should cultivate both.
 
 Farm should make systematic investigation accessible enough to become a habit, rigorous enough to earn trust, and economical enough to continue for the life of a project.
-
-A factory helps us build software. A farm helps us discover what software needs, what is worth preserving and what we can trust.
 
 **Build continuously. Learn continuously. Cultivate software for the long term.**
 
