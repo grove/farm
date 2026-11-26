@@ -28,6 +28,8 @@ Even a stable project with no feature backlog has questions worth asking. An une
 
 Farm helps discover these opportunities before they become incidents, maintenance burdens or forgotten assumptions. It can also discover that the current design is sound and that changing it would be a mistake.
 
+Software does not evolve in isolation. Its users, dependencies, workloads and operating environment change. A system may still satisfy its original contracts while the assumptions behind them no longer hold. Continuous cultivation should help discover when those assumptions need to be reconsidered, not just whether the software satisfies them.
+
 ## Farms and factories
 
 AI is making it easier to turn an intention into code. It is not making every intention worth pursuing. As our capacity to implement grows, the ability to decide what to implement, what to preserve and what to remove becomes more valuable.
@@ -47,7 +49,7 @@ A farm may write a small test, build a prototype or try an alternative design to
 
 **Investigate → learn → decide → implement → verify → investigate again.**
 
-Farm should strengthen this loop without becoming another software factory.
+Farms and factories may become closely integrated over time. A farm could pass a well-supported discovery to a factory for implementation under the project's delivery rules, then investigate whether the resulting change actually improved the system. What matters is the distinction in purpose, evidence and authority, not that the two practices use separate infrastructure. Farm should strengthen this loop without becoming another software factory.
 
 ## What a farm cultivates
 
@@ -85,6 +87,8 @@ A well-cultivated system should become easier to investigate as it grows. More o
 
 Farm should also make room for new questions: opportunities to improve performance, compare designs or reconsider assumptions in light of new evidence. New perspectives should earn their place through demonstrated value, not through an expanding cast of agent personas.
 
+A mature farm should become better not only at answering questions, but at recognizing which questions are worth asking. There will always be more possible investigations than a project can afford to pursue. The consequences of being wrong, the strength of existing evidence, the potential value of a discovery and the cost of investigating it should guide where attention goes next.
+
 ## A farm that earns trust
 
 Maintainer attention is Farm's scarcest resource. A farm should give engineers back more time and confidence than it consumes. It should bear the burden of demonstrating its findings rather than ask people to disprove persuasive speculation.
@@ -97,6 +101,8 @@ A few principles should endure even as models, tools and platforms change:
 - **Value before compute.** Use existing deterministic instruments whenever they suffice; spend deeper investigation effort where it adds value.
 - **Simplicity and local ownership.** Reuse existing tools and conventions, respect project authority, and enforce safe execution boundaries.
 - **Grow empirically.** Increase scope and autonomy only when evidence justifies the additional cost and risk.
+
+Continuous cultivation means an enduring commitment to inquiry, not continuous execution. A stable library may need only occasional investigations; a rapidly evolving system may justify much more frequent attention. A farm should adapt to the needs of the project, including knowing when to leave it alone.
 
 Quiet cultivation should be visible without being noisy. A short record of the questions actually tested, the results and their limits can make an uneventful investigation worthwhile. Repeated activity without new learning is a reason to scale back.
 
