@@ -24,15 +24,15 @@ AI is making code cheaper to write. The cost of maintaining unnecessary code rem
 
 A factory delivers a change. A farm produces evidence that helps someone decide whether a change is warranted. Discovering that the existing design is sound is a perfectly good outcome.
 
-The two practices can work closely together. An investigation may involve writing a test or building a prototype; implementation often involves discovery of its own. A farm might eventually hand a finding to a factory and investigate the result of its work. The distinction lies in the purpose of the work and the authority to act, not in the tools used. For now, maintainers decide which findings to act on, and production changes go through the project's ordinary delivery process.
+The two practices can work closely together. An investigation may involve writing a test or building a prototype; implementation often involves discovery of its own. A farm might eventually hand a finding to a factory and investigate the result of its work. The distinction lies in the purpose of the work and the authority to act, not in the tools used. For now, maintainers decide which findings to act on.
 
-A project may eventually delegate some of these decisions to a farm. The maintainers should be able to specify which decisions the farm can make, review what it did and why, and withdraw that permission.
+A project may eventually delegate some of these decisions to a farm. The maintainers should be able to specify which decisions the farm can make, review what it did and why, and withdraw that permission. Production changes still go through the project's ordinary delivery process.
 
 **Investigate → learn → decide → implement → verify → investigate again.**
 
 ## What a farm cultivates
 
-A farm investigates uncertainties that matter to the people who maintain or use the software. Farm begins with correctness and simplicity. Other investigations might concern how the system behaves under load or when a dependency fails, where its security assumptions break down or whether a feature still serves its users.
+A farm helps resolve uncertainties that matter to the people who maintain or use the software. Farm's first two roles deal with correctness and simplicity. Other investigations might ask how the system behaves under load or when a dependency fails, where its security assumptions break down or whether a feature still serves its users.
 
 ### Correctness
 
@@ -58,7 +58,7 @@ Such knowledge belongs in the project's own tests, documentation and engineering
 
 What the project learns may not hold forever. A benchmark may reflect a workload the system no longer serves. A test may still enforce a guarantee the project has since dropped. Earlier findings need revisiting when their assumptions change, and obsolete tests and explanations should be corrected or removed.
 
-As this knowledge accumulates, the software should become easier to investigate. Engineers and agents alike can build on earlier work rather than repeat it. The test for the lost transaction, for instance, might make the next crash experiment much cheaper to set up. A simpler recovery protocol would leave fewer cases to reason about.
+As this knowledge accumulates, the software should become easier to investigate. Engineers and agents alike can build on earlier work rather than repeat it. The test for the lost transaction, for instance, might make the next crash experiment much cheaper to set up. A simpler recovery protocol may also be easier to test.
 
 ## Choosing the next question
 
@@ -76,13 +76,13 @@ The maintainer's attention is a scarce resource. Three principles follow from th
 
 Continuous cultivation does not mean running all the time. A stable library may need only an occasional investigation; a rapidly changing system may justify more frequent attention. Reduce the frequency or stop when the work is no longer yielding useful knowledge.
 
-Farm should use the tools and conventions of the projects it serves. Other software farms may use different platforms and models. Those projects own their knowledge, resources and decisions. Investigations must stay within approved execution boundaries. Increases in scope, cost or autonomy should be justified by experience.
+Farm should use the tools and conventions of the projects it serves. Those projects own their knowledge, resources and decisions. Investigations must stay within approved execution boundaries. Increases in scope, cost or autonomy should be justified by experience.
 
 ## Start small, think long-term
 
 The first step is to prove Hunter on real infrastructure libraries where correctness matters and good verification tools already exist. A maintainer should be able to install Farm, run a single bounded investigation and retain any useful evidence without adopting a new runtime. Gardener and other methods can follow if they demonstrate value beyond what the project already has.
 
-The [roadmap](roadmap.md) sets out how to test that approach. The [architecture](design.md) describes the current GitHub-native design and its operating boundaries.
+The [roadmap](roadmap.md) sets out how to test that approach. The [architecture](design.md) describes the current GitHub-native design and its operating boundaries. Other software farms may use different platforms and models.
 
 ## The ambition
 
