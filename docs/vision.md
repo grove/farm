@@ -2,149 +2,132 @@
 
 *Continuous cultivation of software*
 
-**Status:** Proposed direction, not a commitment to features or a change to the current architecture.
+## Software deserves continuous care
 
-## 1. The vision
+We have learned to build, test and deliver software continuously. We have not yet made it normal to continuously question the software we already have.
 
-Farm should make continuous cultivation a normal part of software development, just as continuous integration has made continuous verification a normal part of development.
+Does it really behave as we believe? Are its guarantees adequately demonstrated? Is all of its complexity necessary? What could we learn that would change our understanding of the system?
 
-Software may work well while our understanding of it remains incomplete. Farm systematically challenges assumptions, tests guarantees and explores simplifications so software becomes **more correct, simpler, better understood and easier to evolve**.
+Farm exists to make that kind of inquiry a natural part of software engineering. Its vision is software that becomes **more correct, simpler, better understood and easier to evolve throughout its lifetime**.
 
-Maintainer attention is Farm's scarcest resource. A plausible but incorrect finding can take far longer to disprove than it took an agent to produce. Farm must save more engineering attention than it consumes, including the time spent rejecting its mistakes. If maintainers have to investigate Farm's claims for it, Farm has failed.
+Imagine a project that grows more trustworthy as it ages, not merely larger. Its guarantees become clearer, its tests more revealing, and its unnecessary machinery gradually disappears. The people maintaining it inherit not just code, but a better understanding of why that code exists and what can be trusted about it.
 
-## 2. Why a software farm?
+That is the promise of continuous cultivation.
 
-AI is making code cheaper to produce, but knowing what to build, what to preserve and what to trust remains hard. As implementation capacity grows, so must our capacity for judgment.
+## From continuous integration to continuous cultivation
+
+Continuous integration asks whether a change passes the checks we have defined. Continuous delivery helps turn a chosen change into working software. Continuous cultivation asks whether we are checking the right things, whether our assumptions still hold and whether a change is worth making in the first place.
+
+| Practice | Central question |
+| --- | --- |
+| Continuous integration | Does this change satisfy our existing checks? |
+| Continuous delivery | Can we deliver this change reliably? |
+| Continuous cultivation | What should we investigate, understand or improve next? |
+
+Even a stable project with no feature backlog has questions worth asking. An unexpected combination of valid operations might expose a defect. A complicated abstraction might outlive the reason it was introduced. A passing test suite might provide less confidence than we think.
+
+Farm helps discover these opportunities before they become incidents, maintenance burdens or forgotten assumptions. It can also discover that the current design is sound and that changing it would be a mistake.
+
+## Farms and factories
+
+AI is making it easier to turn an intention into code. It is not making every intention worth pursuing. As our capacity to implement grows, the ability to decide what to implement, what to preserve and what to remove becomes more valuable.
 
 A software factory starts with work to be done. A software farm starts with a question worth investigating.
 
 | Software factory | Software farm |
 | --- | --- |
 | Implements a chosen change | Discovers whether a change is worthwhile |
-| Works toward a defined outcome | Investigates an uncertain outcome |
-| Produces working software | Produces evidence, knowledge and recommendations |
-| Measures successful delivery | Measures useful learning |
+| Works toward a specified outcome | Investigates an uncertain outcome |
+| Produces working software | Produces evidence, understanding and worthwhile options |
+| Measures delivery | Measures useful learning |
 
-Farm should complement software factories, not become one.
+Both need sound engineering judgment. The distinction is their starting point and purpose, not a prohibition on discovery in factories or experimentation in farms.
 
-## 3. The work of a farm
-
-| Perspective | Central question | Contribution |
-| --- | --- | --- |
-| **Hunter — Correctness** | What might be wrong or insufficiently demonstrated? | Reproducible evidence of defects, violated contracts and material verification gaps. |
-| **Gardener — Simplicity** | What could be easier to understand, change or verify? | Demonstrated opportunities to reduce complexity while preserving required behavior. |
-
-Future directions include knowledge curation, independent re-examination, performance research and system health where questions can be answered with evidence. Explore these as methods within existing roles before considering any new role with a demonstrated, distinct need.
-
-## 4. Investigation as a discipline
-
-All investigations follow a common method:
-
-1. Select a bounded, consequential question and identify the relevant contract or invariant.
-2. Screen using cheap checks and existing evidence.
-3. State a hypothesis, what would falsify it and a resource budget.
-4. Examine the actual system with authorized instruments and seek counterevidence.
-5. Validate the result, record its limits and check for duplicates.
-6. Publish only if the evidence and materiality requirements are met; otherwise stop quietly.
-
-### Proof before interruption
-
-Farm bears the burden of making a consequential claim inexpensive to check.
-
-**Hunter.** Require an executable reproduction, a failing test or a concrete, checkable counterexample to an identified contract or verification claim. Include the affected revision, assumptions, expected and observed behavior, and reproduction instructions. A test that invents a requirement or exercises only an unsupported path is insufficient; textual arguments alone do not justify unsolicited findings.
-
-When a domain contract is missing or unclear, restrict defect claims to independently established invariants, such as unexpected panics on supported inputs, demonstrable resource leaks, data races that violate the language or runtime rules, or security boundary violations. Do not infer business rules from implementation details; record contract uncertainty in the run record instead of presenting it as a defect.
-
-**Gardener.** Simplification is more subjective than correctness and generally carries a higher review risk. Initially restrict investigations to demonstrably safe mechanical wins (such as dead code, redundant state and unreachable branches) or well-tested boundaries where preservation can be established. Require a bounded candidate diff or experiment, concrete evidence of reduced complexity, and evidence that relevant behavior and constraints are preserved, including edge cases and indirect uses. Passing existing CI or reducing line count is not sufficient; use targeted characterization, differential or property tests, or a checkable equivalence argument as appropriate. Withhold findings when preservation cannot be demonstrated; broaden scope only after earning trust.
-
-Retain useful uncertainty in bounded run records, not speculative issues. Requested run summaries and operational failures must not bypass the finding gate; sensitive findings follow the project's authorized disclosure process.
-
-Deduplicate against known issues, stage publication until qualified, and bound unsolicited findings by a maintainer-approved attention budget. Narrow or suspend activity when false positives impose excessive review costs.
-
-### Spend compute where it matters
-
-An investigation is worth its cost when the consequence of the question, its tractability and the expected value of learning justify the resources required. Use tiered execution:
-
-- **Cheap screening:** existing deterministic checks, change history, relevant prior evidence and, where useful, smaller models; signals are leads, not findings.
-- **Focused investigation:** bounded context, approved tools and a modest allowance; stop when resolved or meaningful progress is unlikely.
-- **Deep investigation:** more capable models, larger experiments or independent replication only when risk, uncertainty and expected value justify escalation.
-
-Set per-run and cumulative budgets for model usage, compute and experiments. Quiet and inconclusive outcomes can be valuable, but repeated expensive reconfirmation of stable behavior is not sustainable. Reduce cadence, narrow scope or stop when marginal value no longer justifies cost.
-
-## 5. Learning that accumulates without going stale
-
-Retained knowledge is a maintenance obligation. Prefer **executable memory**: reviewed regression tests, property tests, assertions and reproducible experiments in the project's existing verification suite. A passing test does not establish a contract it was never designed to exercise.
-
-When prose is necessary, for example to explain design rationale or experimental limitations, use existing specifications, architecture decisions and scoped guidance sparingly. Every retained prose conclusion must identify:
-
-- Its authoritative contract or assumption and the revision at which evidence was obtained.
-- The supporting evidence or verification procedure.
-- Exact paths, symbols, contract versions or other versioned dependencies whose change invalidates it, or the baseline commit if a narrower boundary cannot be established.
-
-Changes to these dependencies invalidate the conclusion until revalidated. If validity cannot be established, treat it as historical context rather than current truth. Prefer existing repository and CI mechanisms to detect changes and rerun checks, not a parallel knowledge base or memory service.
-
-The project owns its knowledge; agent observations become authoritative only through maintainer review. Retain only lessons worth maintaining, and retire those that no longer apply.
-
-## 6. How cultivation and delivery work together
+A farm may write a small test, build a prototype or try an alternative design to learn something. Production changes remain the responsibility of the project's ordinary delivery process. Maintainers decide which discoveries to act on, and the farm can later re-examine the result.
 
 **Investigate → learn → decide → implement → verify → investigate again.**
 
-Suppose a database promises to recover committed data after an interruption. Hunter produces a failing reproduction against that guarantee. A maintainer checks and accepts the finding; a developer or factory fixes it. A fresh investigation checks the original claim against the new version, and the project preserves the lesson as a regression test.
+Farm should strengthen this loop without becoming another software factory.
 
-GitHub issues can connect cultivation to ordinary development or an optional delivery system such as Gas City. An agent's finding must not automatically become an implementation instruction. Maintainers control priorities, contracts, changes and releases.
+## What a farm cultivates
 
-## 7. A small foundation that can grow
+### Correctness
 
-Farm distributes reusable investigation practices and native GitHub Agentic Workflows. Projects can start with one manually triggered investigation using existing documentation and tools, without a Farm-operated service or database.
+*What might be wrong, and what have we not yet demonstrated?*
 
-Investigations executing project code, builds, containers or fuzzers must use isolated, ephemeral, network-restricted sandboxes with least-privilege credentials and explicitly authorized commands and destinations. Experimental code must not receive model-provider credentials, repository write tokens, unrelated secrets or privileged host or container-daemon access. Enforce hard wall-clock, token or equivalent provider-enforced model-usage, compute and concurrency limits outside agent prompts; bound output, control publication and terminate experiments at their limits. If the workflow, runner or engine cannot enforce these controls, disable the experiment or unattended mode until it can. These are qualification requirements, not claims about current capabilities.
+Hunter challenges confidence in existing software. It connects contracts, callers, tests and implementation to discover questions that conventional verification has not yet answered.
 
-Keep capabilities independently useful and scale up or down in response to demonstrated need. Express methods without unnecessary engine dependencies, but avoid generic runtime abstractions or multiple distributions before they are needed. A native Gas City distribution or other runtime would require a separate decision and equivalent safeguards.
+Imagine a storage engine whose tests exercise commits, checkpoints and recovery independently. Hunter identifies a meaningful combination of those operations, constructs a controlled experiment and exposes a lost acknowledged transaction. A maintainer can reproduce the failure rather than audit pages of reasoning. The fix becomes a lasting regression test.
 
-## 8. Principles that should endure
+The greatest value is not running more tests. It is discovering the next important test before a user discovers the next important bug.
 
-- **Proof before interruption.** Make consequential findings cheap to verify.
-- **Evidence before action.** Distinguish hypotheses, observations, supported conclusions and decisions.
-- **Executable memory before prose.** Retain learning that can be checked against changing software.
-- **Value before compute.** Use the cheapest adequate method within explicit budgets.
-- **Learning before output.** Accept quiet outcomes and reject issue or activity quotas.
-- **Simplicity before machinery.** Prefer existing conventions, tools and native capabilities.
-- **Local ownership and enforced authority.** Projects control contracts, data, credentials, knowledge and budgets; investigations grant no implicit write, disclosure or access privileges.
-- **Gradual, reversible growth.** Expand scope and autonomy only with demonstrated value, reviewed risks and meaningful human oversight.
+### Simplicity
 
-## 9. A possible path forward
+*What could be easier to understand, change or verify without losing what matters?*
 
-These are development horizons, not release dates.
+Gardener explores the complexity that accumulates as software evolves. Its ambition goes beyond cleanup that a linter can already perform. It asks whether an abstraction remains necessary, whether two representations of the same state can become one, or whether a simpler model could eliminate an entire class of failure.
 
-| Horizon | Focus | Evidence of readiness |
-| --- | --- | --- |
-| **Establish the foundation** | Qualify installation, execution safeguards, Hunter, Gardener and onboarding. | Reproducible, economical findings; enforced controls hold. |
-| **Make learning cumulative** | Improve evidence quality, deduplication and knowledge retention. | Reviewed lessons remain useful as code evolves. |
-| **Broaden cultivation** | Add proven methods, better screening and optional delivery integration. | Distinct value within review and compute budgets. |
-| **Grow with complex systems** | Explore coordinated and cross-project investigations or alternative runtimes. | Observed needs justify added complexity, cost and risk. |
+Imagine a service that maintains two overlapping sources of truth. Rather than suggesting a stylistic refactor, Gardener investigates whether a single representation can preserve the required behavior, demonstrates the benefit and checks the difficult cases. It might find that the two representations are essential. Either result can be useful.
 
-Qualify the evidence, review economics and execution boundaries before enabling recurring unattended operation or publication.
+Simplification is valuable when it reduces the reasoning burden of future engineers, not merely the number of lines of code.
 
-## 10. How we know Farm is succeeding
+### Understanding
 
-Measure outcomes, not activity:
+*What do we know, why do we believe it, and what remains uncertain?*
 
-- **Review economics:** time validating, dismissing and deduplicating findings; precision, materiality and value relative to review effort.
-- **Compute economics:** model and experiment costs across all runs (including quiet, blocked and inconclusive runs), cost per accepted useful finding or validated learning outcome, and marginal benefit of deeper investigations.
-- **Software outcomes:** reproducible findings, stronger verification of important guarantees and demonstrably simpler software.
-- **Knowledge health:** continuing usefulness of executable checks, prose maintenance costs, stale conclusions prevented from influencing work, and avoided repeat investigations.
-- **Safety and coverage:** whether execution controls hold and whether screening or publication misses important problems; evaluate against known cases and sampled quiet outcomes when practical.
+Learning is a shared outcome of every Farm investigation. Projects should accumulate stronger evidence, clearer contracts and a better understanding of the choices they have made.
 
-Use project-specific thresholds to increase, narrow, pause or stop activity. There is no universal acceptable cost per finding or false-positive rate.
+An investigation can clarify why a recovery guarantee needs a particular ordering constraint, reveal the limits of a benchmark, or establish that a seemingly redundant check protects an important edge case. Where possible, that knowledge becomes executable evidence. Reviewed rationale and decisions belong in the project's existing documentation and engineering records.
 
-## 11. The ambition
+Farm should also make room for new questions: opportunities to improve performance, compare designs or reconsider assumptions in light of new evidence. New perspectives should earn their place through demonstrated value, not through an expanding cast of agent personas.
 
-Continuous integration helps us know whether a change satisfies the checks we have defined. Continuous cultivation helps us discover whether those checks are sufficient, whether our assumptions remain valid, and whether we are investing effort in the right things.
+These examples describe the ambition, not capabilities Farm has already demonstrated or promised for its first release.
 
-Farm should make this inquiry accessible to ordinary software projects, from a small library to a complex long-lived system.
+## Learning that compounds
 
-**A software factory helps us build software. A software farm helps us understand what software is worth building, what is worth preserving, and what can be trusted.**
+The lasting product of a farm is not its latest report. It is the improvement in what a project knows and can verify.
+
+A useful discovery can become a regression test, a property, an assertion or a repeatable benchmark. A lesson encoded this way can be checked against later changes without paying an agent to rediscover it. Other lessons, such as design rationale, can be preserved through the project's normal review process.
+
+Executable evidence is preferred where possible, but it is not the only valuable form of engineering knowledge. Farm should strengthen the project's own knowledge, not create a parallel memory system that must be maintained.
+
+A well-cultivated system should become easier to investigate as it grows. More of its important behavior is explicit, more of its assumptions can be tested and less effort is wasted rediscovering old lessons.
+
+## A farm that earns trust
+
+Maintainer attention is Farm's scarcest resource. A farm should give engineers back more time and confidence than it consumes. It should bear the burden of demonstrating its findings rather than ask people to disprove persuasive speculation.
+
+A few principles should endure even as models, tools and platforms change:
+
+- **Proof before interruption.** Make consequential findings inexpensive to verify.
+- **Evidence over activity.** A useful negative result is better than an unnecessary issue; there are no finding quotas.
+- **Learning that lasts.** Prefer repeatable evidence and preserve reviewed knowledge where the project already maintains it.
+- **Value before compute.** Use existing deterministic instruments whenever they suffice; spend deeper investigation effort where it adds value.
+- **Simplicity and local ownership.** Reuse existing tools and conventions, respect project authority, and enforce safe execution boundaries.
+- **Grow empirically.** Increase scope and autonomy only when evidence justifies the additional cost and risk.
+
+Quiet cultivation should be visible without being noisy. A short record of the questions actually tested, the results and their limits can make an uneventful investigation worthwhile. Repeated activity without new learning is a reason to scale back.
+
+## Start small, think long-term
+
+Farm does not need a large society of agents or a new orchestration platform to begin. A project should be able to install a farm, start with one bounded investigation, and retain whatever useful evidence it discovers.
+
+The first product strategy is deliberately narrower than this vision: prove Hunter on real, high-reliability infrastructure libraries, using the tools those projects already have. Then establish whether additional methods and perspectives, including Gardener, deliver enough incremental value to justify themselves.
+
+The [roadmap](roadmap.md) defines how we will test that strategy. The [architecture](design.md) defines the operating boundaries, evidence standards and lightweight GitHub-native implementation. Neither is the limit of the long-term ambition.
+
+## The ambition
+
+Every software project has a backlog of things it knows it wants to do. It also has a much larger, mostly invisible landscape of questions it has not thought to ask.
+
+A mature software engineering practice should cultivate both.
+
+Farm should make systematic investigation accessible enough to become a habit, rigorous enough to earn trust, and economical enough to continue for the life of a project.
+
+A factory helps us build software. A farm helps us discover what software needs, what is worth preserving and what we can trust.
+
+**Build continuously. Learn continuously. Cultivate software for the long term.**
 
 ---
 
-Related documents: [Farm README](https://github.com/grove/farm), [product and architecture](https://github.com/grove/farm/blob/main/docs/design.md), and [shared investigation method](https://github.com/grove/farm/blob/main/workflows/shared/farm-investigation.md). These describe the existing design; this proposed vision extends it without superseding it.
+Related documents: [Farm README](../README.md), [implementation and release plan](roadmap.md), [product and architecture](design.md), and [shared investigation method](../workflows/shared/farm-investigation.md).

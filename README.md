@@ -8,14 +8,14 @@ Farm should be a small, reusable distribution of agentic workflows and investiga
 
 > **Status: initial design and experimental package candidate.** The package is not released or qualified for unattended use. The workflows in this repository are distribution sources, not active GitHub Actions workflows.
 
-## Start with two roles
+## Two complementary perspectives
 
 | Role | Mission |
 | --- | --- |
 | Hunter | Challenge the project's confidence in correctness, completeness and evidence. |
 | Gardener | Reduce the effort needed to understand, change and verify the project without weakening its contracts. |
 
-Both investigate one bounded question at a time. They may find nothing new, disprove a hypothesis, or conclude that complexity is necessary. Useful findings go to human review. Neither role is required to generate issues or write production code.
+The experimental package contains both roles. The first release strategy is to qualify Hunter and onboarding; Gardener is a later candidate that must demonstrate distinct value. Both investigate one bounded question at a time. They may find nothing new, disprove a hypothesis, or conclude that complexity is necessary. Useful findings go to human review. Neither role is required to generate issues or write production code.
 
 ## Intended installation and onboarding experience
 
@@ -34,7 +34,7 @@ Review [the onboarding guide](docs/onboarding.md) for the concrete process. Link
 
 Review the native gh-aw engine, authentication, permissions, tools and costs, and compile with `gh aw compile`. Initially, runs are manually dispatched and issue creation is staged. Discovery of a command does not grant permission to execute it; approve any additional instruments through trusted native workflow settings.
 
-After reviewing native execution settings, run the survey (if useful), review its proposal, and manually calibrate the selected roles on real questions before scheduling anything. Hunter and Gardener accept an optional `question` input on manual dispatch: leave it blank for autonomous question selection, or supply one bounded question and the evidence needed. Do not include sensitive data or commands to authorize. A question is scope, not additional authority; edit and review native workflow permissions separately. The first release must prove this flow in two independent repositories before we advertise it as working. See the [implementation plan](docs/roadmap.md).
+After reviewing native execution settings, run the survey (if useful), review its proposal, and manually calibrate Hunter on real questions before scheduling anything. Hunter and Gardener accept an optional `question` input on manual dispatch: leave it blank for autonomous question selection, or supply one bounded question and the evidence needed. Do not include sensitive data or commands to authorize. A question is scope, not additional authority; edit and review native workflow permissions separately. The first release must prove this flow in two independent repositories before we advertise it as working. See the [implementation plan](docs/roadmap.md).
 
 ## Design principles
 
@@ -44,7 +44,7 @@ After reviewing native execution settings, run the survey (if useful), review it
 - **Evidence over activity:** useful learning matters; issue counts and agent activity do not.
 - **Local ownership:** the consuming repository owns its data, credentials, contracts, budgets, findings and decisions.
 - **Explicit authority:** proposals are not permission to change code or publish sensitive information.
-- **Scale with the project:** begin with one or two roles and bounded runs. Grow attention, frequency, depth or specialization only as project needs and useful evidence justify it; scale back when they do not.
+- **Scale with the project:** begin with Hunter and bounded runs. Grow attention, frequency, depth or specialization only as project needs and useful evidence justify it; scale back when they do not.
 - **Near-zero additional runtime:** GitHub Agentic Workflows is the runtime. Prefer ordinary Markdown and YAML and existing project instruments; no Farm service, worker or database. If a small helper is unavoidable, run it ephemerally inside an existing GitHub Actions job.
 
 ## Development
@@ -53,6 +53,7 @@ The [native package qualification](docs/qualification.md) and [lifecycle guide](
 
 ## Project documentation
 
+- [Long-term vision](docs/vision.md)
 - [Product and architecture](docs/design.md)
 - [Onboarding existing projects](docs/onboarding.md)
 - [Implementation and release plan](docs/roadmap.md)
